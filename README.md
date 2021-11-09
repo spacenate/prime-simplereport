@@ -32,6 +32,8 @@ https://simplereport.gov/
   - [Deploy](#deploy)
     - [Revert to a Previous Release](#revert-to-a-previous-release)
     - [Deploy With Action](#deploy-with-action)
+  - [Deployment Issues](#deployment-issues)
+    - [Maintenance Mode](#maintenance-mode)
 
 ## Setup
 
@@ -67,7 +69,7 @@ Another option (also compatible with Linux) is to install with [jabba](https://g
 ```sh
 curl -sL https://github.com/shyiko/jabba/raw/master/install.sh | bash && . ~/.jabba/jabba.sh
 jabba install adopt@1.11-0
-jabba use adopt@1.11
+jabba use adopt@1.11-0
 ```
 
 Running with docker:
