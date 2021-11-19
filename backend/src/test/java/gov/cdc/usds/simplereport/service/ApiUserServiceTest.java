@@ -22,7 +22,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.web.WebAppConfiguration;
 
+@WebAppConfiguration
 @TestPropertySource(properties = "hibernate.query.interceptor.error-level=ERROR")
 class ApiUserServiceTest extends BaseServiceTest<ApiUserService> {
 

@@ -22,6 +22,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.test.context.web.WebAppConfiguration;
 
 /**
  * Base class for service-level integration. Avoids setting up servlet and web security, but sets up
@@ -36,9 +37,11 @@ import org.springframework.security.access.AccessDeniedException;
       "spring.main.web-application-type=NONE",
       "simple-report.authorization.role-prefix=" + TestUserIdentities.TEST_ROLE_PREFIX,
       "hibernate.query.interceptor.error-level=EXCEPTION"
-    })
+    },
+webEnvironment = SpringBootTest.WebEnvironment.MOCK)
 @Import(SliceTestConfiguration.class)
 @WithSimpleReportStandardUser
+@WebAppConfiguration
 public abstract class BaseServiceTest<T> {
 
   @Autowired private DbTruncator _truncator;

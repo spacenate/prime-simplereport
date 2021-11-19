@@ -15,10 +15,10 @@ import gov.cdc.usds.simplereport.api.model.useraccountcreation.SetPasswordReques
 import gov.cdc.usds.simplereport.api.model.useraccountcreation.SetRecoveryQuestionRequest;
 import gov.cdc.usds.simplereport.api.model.useraccountcreation.UserAccountStatus;
 import gov.cdc.usds.simplereport.idp.authentication.OktaAuthentication;
+import jakarta.validation.Valid;
 import javax.annotation.Nullable;
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
-import javax.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;

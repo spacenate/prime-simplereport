@@ -4,8 +4,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import gov.cdc.usds.simplereport.api.model.TemplateVariablesProvider;
+import jakarta.validation.constraints.NotNull;
 import java.util.Map;
-import javax.validation.constraints.NotNull;
 import lombok.Getter;
 
 @Getter
