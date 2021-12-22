@@ -72,6 +72,6 @@ jobs:
         run: make init-prod
       - name: Force off existing lock
         run: |
-          terraform force-unlock -force e992a380-5540-c97f-c265-c66bf226c2b8
+          terraform force-unlock e992a380-5540-c97f-c265-c66bf226c2b8
       - name: Terraform plan
         run: make plan-prod
