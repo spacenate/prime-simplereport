@@ -74,7 +74,7 @@ export const UPDATE_FACILITY_MUTATION = gql`
     $orderingProviderPhone: String
     $devices: [ID]!
   ) {
-    updateFacilityNew(
+    updateFacility(
       facilityId: $facilityId
       testingFacilityName: $testingFacilityName
       cliaNumber: $cliaNumber
@@ -125,7 +125,7 @@ const ADD_FACILITY_MUTATION = gql`
     $orderingProviderPhone: String
     $devices: [ID]!
   ) {
-    addFacilityNew(
+    addFacility(
       testingFacilityName: $testingFacilityName
       cliaNumber: $cliaNumber
       street: $street

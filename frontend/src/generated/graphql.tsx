@@ -170,10 +170,7 @@ export type Mutation = {
 export type MutationAddFacilityArgs = {
   city?: Maybe<Scalars["String"]>;
   cliaNumber?: Maybe<Scalars["String"]>;
-  county?: Maybe<Scalars["String"]>;
-  defaultDevice: Scalars["String"];
-  deviceSpecimenTypes?: Maybe<Array<Maybe<Scalars["ID"]>>>;
-  deviceTypes: Array<Maybe<Scalars["String"]>>;
+  deviceIds: Array<Maybe<Scalars["ID"]>>;
   email?: Maybe<Scalars["String"]>;
   orderingProviderCity?: Maybe<Scalars["String"]>;
   orderingProviderCounty?: Maybe<Scalars["String"]>;
@@ -445,10 +442,7 @@ export type MutationUpdateDeviceTypeArgs = {
 export type MutationUpdateFacilityArgs = {
   city?: Maybe<Scalars["String"]>;
   cliaNumber?: Maybe<Scalars["String"]>;
-  county?: Maybe<Scalars["String"]>;
-  defaultDevice: Scalars["String"];
-  deviceSpecimenTypes?: Maybe<Array<Maybe<Scalars["ID"]>>>;
-  deviceTypes: Array<Maybe<Scalars["String"]>>;
+  deviceIds: Array<Maybe<Scalars["ID"]>>;
   email?: Maybe<Scalars["String"]>;
   facilityId: Scalars["ID"];
   orderingProviderCity?: Maybe<Scalars["String"]>;
@@ -1044,7 +1038,7 @@ export type UpdateFacilityMutationVariables = Exact<{
 
 export type UpdateFacilityMutation = {
   __typename?: "Mutation";
-  updateFacilityNew?: Maybe<string>;
+  updateFacility?: Maybe<string>;
 };
 
 export type AddFacilityMutationVariables = Exact<{
@@ -1073,7 +1067,7 @@ export type AddFacilityMutationVariables = Exact<{
 
 export type AddFacilityMutation = {
   __typename?: "Mutation";
-  addFacilityNew?: Maybe<string>;
+  addFacility?: Maybe<string>;
 };
 
 export type GetManagedFacilitiesQueryVariables = Exact<{
@@ -2322,7 +2316,7 @@ export const UpdateFacilityDocument = gql`
     $orderingProviderPhone: String
     $devices: [ID]!
   ) {
-    updateFacilityNew(
+    updateFacility(
       facilityId: $facilityId
       testingFacilityName: $testingFacilityName
       cliaNumber: $cliaNumber
@@ -2435,7 +2429,7 @@ export const AddFacilityDocument = gql`
     $orderingProviderPhone: String
     $devices: [ID]!
   ) {
-    addFacilityNew(
+    addFacility(
       testingFacilityName: $testingFacilityName
       cliaNumber: $cliaNumber
       street: $street
