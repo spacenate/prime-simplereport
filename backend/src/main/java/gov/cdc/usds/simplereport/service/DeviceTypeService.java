@@ -126,17 +126,34 @@ public class DeviceTypeService {
       List<DeviceSpecimenType> exitingDeviceSpecimenTypes =
           _deviceSpecimenRepo.findAllByDeviceType(device);
 
-      // delete old ones
       ArrayList<DeviceSpecimenType> toBeDeletedDeviceSpecimenTypes =
           new ArrayList<>(exitingDeviceSpecimenTypes);
       toBeDeletedDeviceSpecimenTypes.removeAll(newDeviceSpecimenTypes);
-      _deviceSpecimenRepo.deleteAll(toBeDeletedDeviceSpecimenTypes);
 
-      // create new ones
+      // delete old ones
+      toBeDeletedDeviceSpecimenTypes.forEach(
+          deviceSpecimenType -> deviceSpecimenType.setIsDeleted(true));
+      _deviceSpecimenRepo.saveAll(toBeDeletedDeviceSpecimenTypes);
+
       ArrayList<DeviceSpecimenType> toBeAddedDeviceSpecimenTypes =
           new ArrayList<>(newDeviceSpecimenTypes);
       toBeAddedDeviceSpecimenTypes.removeAll(exitingDeviceSpecimenTypes);
-      _deviceSpecimenRepo.saveAll(toBeAddedDeviceSpecimenTypes);
+
+      // create new ones or enable existing ones
+      toBeAddedDeviceSpecimenTypes.forEach(
+          toBeAddedDeviceSpecimenType -> {
+            Optional<DeviceSpecimenType> optionalDeviceSpecimenType =
+                _deviceSpecimenRepo.findIgnoreDeleted(
+                    toBeAddedDeviceSpecimenType.getDeviceType(),
+                    toBeAddedDeviceSpecimenType.getSpecimenType());
+            if (optionalDeviceSpecimenType.isPresent()) {
+              DeviceSpecimenType existingDeviceSpecimenType = optionalDeviceSpecimenType.get();
+              existingDeviceSpecimenType.setIsDeleted(false);
+              _deviceSpecimenRepo.save(existingDeviceSpecimenType);
+            } else {
+              _deviceSpecimenRepo.save(toBeAddedDeviceSpecimenType);
+            }
+          });
     }
     return _repo.save(device);
   }

@@ -8,6 +8,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.OneToMany;
 import lombok.Getter;
+import org.hibernate.annotations.Where;
 import org.springframework.boot.context.properties.ConstructorBinding;
 
 /** The durable (and non-deletable) representation of a POC test device model. */
@@ -30,11 +31,13 @@ public class DeviceType extends EternalAuditedEntity {
   @Column(nullable = false)
   private String swabType;
 
+  /// this is a problem for soft deletion
   @JoinTable(
       name = "device_specimen_type",
       joinColumns = @JoinColumn(name = "device_type_id"),
       inverseJoinColumns = @JoinColumn(name = "specimen_type_id"))
   @OneToMany(fetch = FetchType.LAZY)
+  @Where(clause = "is_deleted=false")
   private List<SpecimenType> swabTypes;
 
   @Column(nullable = false)

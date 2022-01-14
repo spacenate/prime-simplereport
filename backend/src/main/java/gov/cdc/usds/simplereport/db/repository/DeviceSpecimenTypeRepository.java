@@ -14,12 +14,19 @@ public interface DeviceSpecimenTypeRepository
 
   @Override
   @EntityGraph(attributePaths = {"deviceType", "specimenType"})
-  @Query(BASE_QUERY + " and e.deviceType.isDeleted = false and e.specimenType.isDeleted = false")
+  @Query(
+      BASE_QUERY
+          + " and e.deviceType.isDeleted = false and e.specimenType.isDeleted = false and e.isDeleted = false")
   List<DeviceSpecimenType> findAll();
 
   @EntityGraph(attributePaths = {"deviceType", "specimenType"})
   @Query(BASE_QUERY + " and e.deviceType = :deviceType and e.specimenType = :specimenType")
   Optional<DeviceSpecimenType> find(DeviceType deviceType, SpecimenType specimenType);
+
+  @EntityGraph(attributePaths = {"deviceType", "specimenType"})
+  @Query(
+      "from #{#entityName} e where e.deviceType = :deviceType and e.specimenType = :specimenType")
+  Optional<DeviceSpecimenType> findIgnoreDeleted(DeviceType deviceType, SpecimenType specimenType);
 
   @EntityGraph(attributePaths = {"deviceType", "specimenType"})
   Optional<DeviceSpecimenType> findFirstByDeviceTypeInternalIdOrderByCreatedAt(UUID deviceTypeId);

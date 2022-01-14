@@ -121,6 +121,7 @@ type User {
   middleName: String
   lastName: String!
   suffix: String
+  suffix: String
   email: String!
   isAdmin: Boolean
   roleDescription: String!

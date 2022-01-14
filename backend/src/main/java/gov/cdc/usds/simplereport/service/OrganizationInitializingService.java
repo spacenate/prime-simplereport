@@ -59,6 +59,10 @@ public class OrganizationInitializingService {
 
   public void initAll() {
 
+    //    if(_orgRepo.count() != 0){
+    //      return;
+    //    }
+
     // Allows any subsequent callers to have a valid user record for purposes of
     // passing permission-checks
     initCurrentUser();
@@ -247,7 +251,7 @@ public class OrganizationInitializingService {
             "specimen type " + deviceType.getSwabType() + " was not initialized");
       }
       Optional<DeviceSpecimenType> deviceSpecimen =
-          _deviceSpecimenRepo.find(deviceType, defaultTypeForDevice);
+          _deviceSpecimenRepo.findIgnoreDeleted(deviceType, defaultTypeForDevice);
       if (deviceSpecimen.isEmpty()) {
         dsByDeviceName.put(
             deviceType.getName(),
