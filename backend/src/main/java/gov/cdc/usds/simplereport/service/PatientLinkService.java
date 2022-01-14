@@ -1,5 +1,7 @@
 package gov.cdc.usds.simplereport.service;
 
+import static org.springframework.web.context.request.RequestAttributes.SCOPE_REQUEST;
+
 import gov.cdc.usds.simplereport.api.model.errors.ExpiredPatientLinkException;
 import gov.cdc.usds.simplereport.api.model.errors.InvalidPatientLinkException;
 import gov.cdc.usds.simplereport.api.pxp.CurrentPatientContextHolder;
@@ -15,10 +17,12 @@ import gov.cdc.usds.simplereport.db.repository.TestOrderRepository;
 import java.time.LocalDate;
 import java.util.Optional;
 import java.util.UUID;
+import javax.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.context.request.RequestContextHolder;
 
 // NOTE: as of today, only those methods exposed to graphql endpoints have method-level security.
 // We will likely want to want security for the others in the near future.
@@ -35,7 +39,7 @@ public class PatientLinkService {
 
   @Autowired private TestEventRepository testEventRepository;
 
-  @Autowired private CurrentPatientContextHolder contextHolder;
+  //  @Autowired private CurrentPatientContextHolder contextHolder;
 
   public PatientLink getPatientLink(UUID internalId) {
     return plrepo.findById(internalId).orElseThrow(InvalidPatientLinkException::new);
@@ -63,7 +67,7 @@ public class PatientLinkService {
     return plrepo.save(pl);
   }
 
-  public boolean verifyPatientLink(UUID internalId, LocalDate birthDate)
+  public boolean verifyPatientLink(UUID internalId, LocalDate birthDate, HttpServletRequest request)
       throws ExpiredPatientLinkException {
     try {
       PatientLink patientLink = getPatientLink(internalId);
@@ -82,7 +86,15 @@ public class PatientLinkService {
 
       if (patient.getBirthDate().equals(birthDate)) {
         log.trace("Successfully authenticated patient {}", patient.getInternalId());
+
+        CurrentPatientContextHolder contextHolder = new CurrentPatientContextHolder();
         contextHolder.setContext(patientLink, testOrder, patient);
+        request.setAttribute("context", contextHolder);
+        //        RequestContextHolder.getRequestAttributes().setAttribute("context", contextHolder,
+        // SCOPE_REQUEST);
+        RequestContextHolder.currentRequestAttributes()
+            .setAttribute("context", contextHolder, SCOPE_REQUEST);
+
         if (patientLink.isExpired()) {
           log.trace("Link is expired!");
           throw new ExpiredPatientLinkException();

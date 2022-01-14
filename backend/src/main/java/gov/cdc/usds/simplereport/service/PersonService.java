@@ -2,7 +2,6 @@ package gov.cdc.usds.simplereport.service;
 
 import com.microsoft.applicationinsights.core.dependencies.apachecommons.lang3.StringUtils;
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
-import gov.cdc.usds.simplereport.api.pxp.CurrentPatientContextHolder;
 import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
@@ -36,7 +35,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = false)
 public class PersonService {
 
-  private final CurrentPatientContextHolder _patientContext;
+  //  private final CurrentPatientContextHolder _patientContext;
   private final OrganizationService _os;
   private final PersonRepository _repo;
   private final PhoneNumberRepository _phoneRepo;
@@ -51,9 +50,9 @@ public class PersonService {
   public PersonService(
       OrganizationService os,
       PersonRepository repo,
-      CurrentPatientContextHolder patientContext,
+      //      CurrentPatientContextHolder patientContext,
       PhoneNumberRepository phoneRepo) {
-    _patientContext = patientContext;
+    //    _patientContext = patientContext;
     _os = os;
     _repo = repo;
     _phoneRepo = phoneRepo;
@@ -337,47 +336,47 @@ public class PersonService {
 
   // IMPLICIT AUTHORIZATION: this fetches the current patient after a patient link
   // is verified, so there is no authorization check
-  public Person updateMe(
-      StreetAddress address,
-      String country,
-      List<PhoneNumber> phoneNumbers,
-      PersonRole role,
-      List<String> emails,
-      String race,
-      String ethnicity,
-      String tribalAffiliation,
-      String gender,
-      Boolean residentCongregateSetting,
-      Boolean employedInHealthcare,
-      String preferredLanguage) {
-    Person toUpdate = _patientContext.getLinkedOrder().getPatient();
-    toUpdate.updatePatient(
-        toUpdate.getLookupId(),
-        toUpdate.getFirstName(),
-        toUpdate.getMiddleName(),
-        toUpdate.getLastName(),
-        toUpdate.getSuffix(),
-        toUpdate.getBirthDate(),
-        address,
-        country,
-        role,
-        emails,
-        race,
-        ethnicity,
-        Arrays.asList(tribalAffiliation),
-        gender,
-        residentCongregateSetting,
-        employedInHealthcare,
-        preferredLanguage,
-        toUpdate.getTestResultDelivery());
-
-    if (!emails.isEmpty()) {
-      toUpdate.setPrimaryEmail(emails.get(0));
-    }
-
-    updatePhoneNumbers(toUpdate, phoneNumbers);
-    return _repo.save(toUpdate);
-  }
+  //  public Person updateMe(
+  //      StreetAddress address,
+  //      String country,
+  //      List<PhoneNumber> phoneNumbers,
+  //      PersonRole role,
+  //      List<String> emails,
+  //      String race,
+  //      String ethnicity,
+  //      String tribalAffiliation,
+  //      String gender,
+  //      Boolean residentCongregateSetting,
+  //      Boolean employedInHealthcare,
+  //      String preferredLanguage) {
+  //    Person toUpdate = _patientContext.getLinkedOrder().getPatient();
+  //    toUpdate.updatePatient(
+  //        toUpdate.getLookupId(),
+  //        toUpdate.getFirstName(),
+  //        toUpdate.getMiddleName(),
+  //        toUpdate.getLastName(),
+  //        toUpdate.getSuffix(),
+  //        toUpdate.getBirthDate(),
+  //        address,
+  //        country,
+  //        role,
+  //        emails,
+  //        race,
+  //        ethnicity,
+  //        Arrays.asList(tribalAffiliation),
+  //        gender,
+  //        residentCongregateSetting,
+  //        employedInHealthcare,
+  //        preferredLanguage,
+  //        toUpdate.getTestResultDelivery());
+  //
+  //    if (!emails.isEmpty()) {
+  //      toUpdate.setPrimaryEmail(emails.get(0));
+  //    }
+  //
+  //    updatePhoneNumbers(toUpdate, phoneNumbers);
+  //    return _repo.save(toUpdate);
+  //  }
 
   /**
    * This method updates the PhoneNumbers provided by adding/deleting them from the
@@ -423,12 +422,12 @@ public class PersonService {
 
   // IMPLICIT AUTHORIZATION: this fetches the current patient after a patient link
   // is verified, so there is no authorization check
-  public void updateMyTestResultDeliveryPreference(
-      TestResultDeliveryPreference testResultDelivery) {
-    Person patient = _patientContext.getLinkedOrder().getPatient();
-    patient.setTestResultDelivery(testResultDelivery);
-    _repo.save(patient);
-  }
+  //  public void updateMyTestResultDeliveryPreference(
+  //      TestResultDeliveryPreference testResultDelivery) {
+  //    Person patient = _patientContext.getLinkedOrder().getPatient();
+  //    patient.setTestResultDelivery(testResultDelivery);
+  //    _repo.save(patient);
+  //  }
 
   @AuthorizationConfiguration.RequirePermissionEditPatientAtFacility
   public Person updatePatient(

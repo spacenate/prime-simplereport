@@ -1,5 +1,7 @@
 package gov.cdc.usds.simplereport.logging;
 
+import static org.springframework.web.context.request.RequestAttributes.SCOPE_REQUEST;
+
 import gov.cdc.usds.simplereport.api.WebhookContextHolder;
 import gov.cdc.usds.simplereport.api.pxp.CurrentPatientContextHolder;
 import gov.cdc.usds.simplereport.db.model.Organization;
@@ -11,6 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.slf4j.MDC;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.context.request.RequestContextHolder;
 
 /** Wrapper around {@link AuditService} to catch exceptions and rethrow them */
 @Service
@@ -20,17 +23,14 @@ import org.springframework.stereotype.Service;
 public class RestAuditLogManager {
 
   private final AuditService _auditService;
-  private final CurrentPatientContextHolder _contextHolder;
+  //  private final CurrentPatientContextHolder _contextHolder;
   private final WebhookContextHolder _webhookContextHolder;
 
   private static final int DEFAULT_SUCCESS = HttpStatus.OK.value();
 
-  public RestAuditLogManager(
-      AuditService auditService,
-      CurrentPatientContextHolder contextHolder,
-      WebhookContextHolder webhookContextHolder) {
+  public RestAuditLogManager(AuditService auditService, WebhookContextHolder webhookContextHolder) {
     this._auditService = auditService;
-    this._contextHolder = contextHolder;
+    //    this._contextHolder = contextHolder;
     this._webhookContextHolder = webhookContextHolder;
   }
 
@@ -48,6 +48,10 @@ public class RestAuditLogManager {
    *     happened.).
    */
   public boolean logRestSuccess(HttpServletRequest request, Object resultObject) {
+    CurrentPatientContextHolder _contextHolder =
+        (CurrentPatientContextHolder)
+            RequestContextHolder.currentRequestAttributes().getAttribute("context", SCOPE_REQUEST);
+
     PatientLink patientLink = _contextHolder.getPatientLink();
     if (patientLink == null && !_contextHolder.isPatientSelfRegistrationRequest()) {
       log.error(

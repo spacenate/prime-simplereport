@@ -74,8 +74,10 @@ public class AuditService {
       PatientLink patientLink) {
     log.trace("Saving audit event for {}", requestId);
     HttpRequestDetails reqDetails = new HttpRequestDetails(request);
-    ApiUser userInfo = _userService.getCurrentApiUserInContainedTransaction();
-    _repo.save(new ApiAuditEvent(requestId, reqDetails, responseCode, userInfo, org, patientLink));
+    //    ApiUser userInfo = _userService.getCurrentApiUserInContainedTransaction();
+    ApiUser anonymousUser = _userService.getAnonymousApiUser();
+    _repo.save(
+        new ApiAuditEvent(requestId, reqDetails, responseCode, anonymousUser, org, patientLink));
   }
 
   @Transactional(readOnly = false)

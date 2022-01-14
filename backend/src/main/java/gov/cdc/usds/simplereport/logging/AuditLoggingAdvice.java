@@ -1,5 +1,7 @@
 package gov.cdc.usds.simplereport.logging;
 
+import static org.springframework.web.context.request.RequestAttributes.SCOPE_REQUEST;
+
 import gov.cdc.usds.simplereport.api.pxp.CurrentPatientContextHolder;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.PatientLink;
@@ -13,6 +15,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.context.request.RequestContextHolder;
 
 /**
  * This ControllerAdvice component monitors all of the REST handlers (<i>not</i> the GraphQL
@@ -25,11 +28,11 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 public class AuditLoggingAdvice {
 
   private final AuditService _auditService;
-  private final CurrentPatientContextHolder _contextHolder;
+  //  private final CurrentPatientContextHolder _contextHolder;
 
-  public AuditLoggingAdvice(AuditService auditService, CurrentPatientContextHolder contextHolder) {
+  public AuditLoggingAdvice(AuditService auditService) {
     this._auditService = auditService;
-    this._contextHolder = contextHolder;
+    //    this._contextHolder = contextHolder;
   }
 
   @ExceptionHandler
@@ -37,6 +40,10 @@ public class AuditLoggingAdvice {
     Class<? extends Exception> exceptionType = e.getClass();
     log.debug(
         "Checking for response status and patient link for exception of type={}", exceptionType);
+    CurrentPatientContextHolder _contextHolder =
+        (CurrentPatientContextHolder)
+            RequestContextHolder.currentRequestAttributes().getAttribute("context", SCOPE_REQUEST);
+
     if (e instanceof RestAuditFailureException) {
       log.debug("Audit logging already failed: not trying again");
     } else if (_contextHolder.hasPatientLink()) {

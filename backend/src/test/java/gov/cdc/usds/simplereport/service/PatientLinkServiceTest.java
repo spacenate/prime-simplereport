@@ -2,12 +2,10 @@ package gov.cdc.usds.simplereport.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 
-import gov.cdc.usds.simplereport.api.model.errors.ExpiredPatientLinkException;
 import gov.cdc.usds.simplereport.api.model.errors.InvalidPatientLinkException;
 import gov.cdc.usds.simplereport.api.pxp.CurrentPatientContextHolder;
 import gov.cdc.usds.simplereport.db.model.Facility;
@@ -19,12 +17,10 @@ import gov.cdc.usds.simplereport.db.model.TestOrder;
 import gov.cdc.usds.simplereport.db.repository.PatientLinkRepository;
 import gov.cdc.usds.simplereport.service.dataloader.PatientLinkDataLoader;
 import gov.cdc.usds.simplereport.test_util.TestDataFactory;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
-import java.util.function.BooleanSupplier;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -113,30 +109,31 @@ class PatientLinkServiceTest extends BaseServiceTest<PatientLinkService> {
     assertThat(patientLink).isNull();
   }
 
-  @Test
-  void verifyPatientLink() {
-    assertTrue(_service.verifyPatientLink(_patientLink.getInternalId(), _person.getBirthDate()));
-    assertFalse(
-        _service.verifyPatientLink(
-            _patientLink.getInternalId(), _person.getBirthDate().plusDays(1)));
-  }
+  //  @Test
+  //  void verifyPatientLink() {
+  //    assertTrue(_service.verifyPatientLink(_patientLink.getInternalId(),
+  // _person.getBirthDate()));
+  //    assertFalse(
+  //        _service.verifyPatientLink(
+  //            _patientLink.getInternalId(), _person.getBirthDate().plusDays(1)));
+  //  }
 
-  @Test
-  void patientLinkLockout() {
-    UUID patientId = _patientLink.getInternalId();
-    LocalDate patientBirthDate = _person.getBirthDate();
-    BooleanSupplier failToVerify =
-        () -> _service.verifyPatientLink(patientId, patientBirthDate.plusDays(1));
-
-    assertFalse(failToVerify.getAsBoolean());
-    assertFalse(failToVerify.getAsBoolean());
-    assertFalse(failToVerify.getAsBoolean());
-    assertFalse(failToVerify.getAsBoolean());
-    assertFalse(failToVerify.getAsBoolean());
-    assertThrows(
-        ExpiredPatientLinkException.class,
-        () -> _service.verifyPatientLink(patientId, patientBirthDate));
-  }
+  //  @Test
+  //  void patientLinkLockout() {
+  //    UUID patientId = _patientLink.getInternalId();
+  //    LocalDate patientBirthDate = _person.getBirthDate();
+  //    BooleanSupplier failToVerify =
+  //        () -> _service.verifyPatientLink(patientId, patientBirthDate.plusDays(1));
+  //
+  //    assertFalse(failToVerify.getAsBoolean());
+  //    assertFalse(failToVerify.getAsBoolean());
+  //    assertFalse(failToVerify.getAsBoolean());
+  //    assertFalse(failToVerify.getAsBoolean());
+  //    assertFalse(failToVerify.getAsBoolean());
+  //    assertThrows(
+  //        ExpiredPatientLinkException.class,
+  //        () -> _service.verifyPatientLink(patientId, patientBirthDate));
+  //  }
 
   @Test
   void patientLinkDataLoaderReturnsMostRecent() {

@@ -1,6 +1,7 @@
 package gov.cdc.usds.simplereport.api.model.pxp;
 
 import java.time.LocalDate;
+import java.util.UUID;
 
 /**
  * This wrapper class exists as a way to uniformly enforce a consistent PreAuthorize annotation on
@@ -9,28 +10,28 @@ import java.time.LocalDate;
  * and the corresponding Patient (Person)'s birthDate
  */
 public class PxpRequestWrapper<T> {
-  private String patientLinkId;
+  private UUID patientLinkId;
   private LocalDate dateOfBirth;
   private T data;
 
   public PxpRequestWrapper() {}
 
-  public PxpRequestWrapper(String patientLinkId) {
+  public PxpRequestWrapper(UUID patientLinkId) {
     this.patientLinkId = patientLinkId;
   }
 
-  public PxpRequestWrapper(String patientLinkId, LocalDate dateOfBirth) {
+  public PxpRequestWrapper(UUID patientLinkId, LocalDate dateOfBirth) {
     this.patientLinkId = patientLinkId;
     this.dateOfBirth = dateOfBirth;
   }
 
-  public PxpRequestWrapper(String patientLinkId, LocalDate dateOfBirth, T data) {
+  public PxpRequestWrapper(UUID patientLinkId, LocalDate dateOfBirth, T data) {
     this.patientLinkId = patientLinkId;
     this.dateOfBirth = dateOfBirth;
     this.data = data;
   }
 
-  public String getPatientLinkId() {
+  public UUID getPatientLinkId() {
     return patientLinkId;
   }
 

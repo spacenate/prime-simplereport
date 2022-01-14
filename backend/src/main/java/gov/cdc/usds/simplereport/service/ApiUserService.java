@@ -1,5 +1,7 @@
 package gov.cdc.usds.simplereport.service;
 
+import static org.springframework.web.context.request.RequestAttributes.SCOPE_REQUEST;
+
 import com.okta.sdk.resource.user.UserStatus;
 import gov.cdc.usds.simplereport.api.ApiUserContextHolder;
 import gov.cdc.usds.simplereport.api.CurrentAccountRequestContextHolder;
@@ -41,11 +43,13 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.context.annotation.RequestScope;
 import org.springframework.web.context.request.RequestContextHolder;
 
 @Service
 @Transactional(readOnly = false)
 @Slf4j
+@RequestScope
 public class ApiUserService {
 
   @Autowired private AuthorizationService _authService;
@@ -60,7 +64,7 @@ public class ApiUserService {
 
   @Autowired private TenantDataAccessService _tenantService;
 
-  @Autowired private CurrentPatientContextHolder _patientContextHolder;
+  //  @Autowired private CurrentPatientContextHolder _patientContextHolder;
 
   @Autowired private CurrentAccountRequestContextHolder _accountRequestContextHolder;
 
@@ -340,6 +344,9 @@ public class ApiUserService {
   }
 
   private ApiUser getPatientApiUser() {
+    CurrentPatientContextHolder _patientContextHolder =
+        (CurrentPatientContextHolder)
+            RequestContextHolder.currentRequestAttributes().getAttribute("context", SCOPE_REQUEST);
     Person patient = _patientContextHolder.getPatient();
     if (patient == null) {
       throw new UnidentifiedUserException();
@@ -447,6 +454,10 @@ public class ApiUserService {
   }
 
   private Optional<ApiUser> getCurrentNonOktaUser(IdentityAttributes userIdentity) {
+    CurrentPatientContextHolder _patientContextHolder =
+        (CurrentPatientContextHolder)
+            RequestContextHolder.currentRequestAttributes().getAttribute("context", SCOPE_REQUEST);
+
     if (userIdentity == null) {
       if (_patientContextHolder.hasPatientLink()) {
         return Optional.of(getPatientApiUser());

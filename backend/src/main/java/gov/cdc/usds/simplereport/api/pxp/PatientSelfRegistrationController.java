@@ -41,7 +41,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class PatientSelfRegistrationController {
   private final PatientSelfRegistrationLinkService _patientRegLinkService;
   private final PersonService _personService;
-  private final CurrentPatientContextHolder _currentPatientContextHolder;
+  //  private final CurrentPatientContextHolder _currentPatientContextHolder;
 
   public PatientSelfRegistrationController(
       PersonService personService,
@@ -50,12 +50,12 @@ public class PatientSelfRegistrationController {
       CurrentPatientContextHolder currentPatientContextHolder) {
     _personService = personService;
     _patientRegLinkService = patientSelfRegistrationLinkService;
-    _currentPatientContextHolder = currentPatientContextHolder;
+    //    _currentPatientContextHolder = currentPatientContextHolder;
   }
 
   @PostMapping("")
   public void register(@RequestBody PatientSelfRegistration body, HttpServletRequest request) {
-    _currentPatientContextHolder.setIsPatientSelfRegistrationRequest(true);
+    //    _currentPatientContextHolder.setIsPatientSelfRegistrationRequest(true);
 
     PatientSelfRegistrationLink registrationLink =
         _patientRegLinkService.getPatientRegistrationLink(parseString(body.getRegistrationLink()));
