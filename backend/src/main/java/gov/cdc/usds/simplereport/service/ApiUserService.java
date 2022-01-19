@@ -44,6 +44,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.annotation.RequestScope;
+import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
 
 @Service
@@ -454,6 +455,8 @@ public class ApiUserService {
   }
 
   private Optional<ApiUser> getCurrentNonOktaUser(IdentityAttributes userIdentity) {
+    RequestAttributes attributes = RequestContextHolder.currentRequestAttributes();
+    System.out.println(attributes);
     CurrentPatientContextHolder _patientContextHolder =
         (CurrentPatientContextHolder)
             RequestContextHolder.currentRequestAttributes().getAttribute("context", SCOPE_REQUEST);
