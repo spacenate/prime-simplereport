@@ -156,10 +156,10 @@ class PxpTestEventWrapper {
   }
 
   public String getDeviceTypeModel() {
-    return testEvent.getTestOrder().getDeviceSpecimen().getDeviceType().getModel();
+    return testEvent.getDeviceType().getModel();
   }
 
   public String getDeviceTypeName() {
-    return testEvent.getTestOrder().getDeviceSpecimen().getDeviceType().getName();
+    return testEvent.getDeviceType().getName();
   }
 }

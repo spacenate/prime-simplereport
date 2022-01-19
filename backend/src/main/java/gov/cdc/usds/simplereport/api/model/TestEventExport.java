@@ -6,9 +6,11 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import gov.cdc.usds.simplereport.db.model.DeviceSpecimenType;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.Facility;
+import gov.cdc.usds.simplereport.db.model.IdentifiedEntity;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.Provider;
+import gov.cdc.usds.simplereport.db.model.SpecimenType;
 import gov.cdc.usds.simplereport.db.model.TestEvent;
 import gov.cdc.usds.simplereport.db.model.auxiliary.AskOnEntrySurvey;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
@@ -44,6 +46,8 @@ public class TestEventExport {
   private final Optional<Provider> provider;
   private final Optional<Facility> facility;
   private final Optional<Organization> organization;
+  private final Optional<DeviceType> deviceType;
+  private final Optional<SpecimenType> specimenType;
   private final Optional<DeviceSpecimenType> deviceSpecimenType;
 
   public TestEventExport(TestEvent testEvent) {
@@ -54,6 +58,8 @@ public class TestEventExport {
     this.facility = Optional.ofNullable(testEvent.getFacility());
     this.organization = Optional.ofNullable(testEvent.getOrganization());
 
+    this.deviceType = Optional.ofNullable(testEvent.getDeviceType());
+    this.specimenType = Optional.ofNullable(testEvent.getSpecimenType());
     this.deviceSpecimenType = Optional.ofNullable(testEvent.getDeviceSpecimen());
   }
 
@@ -289,10 +295,7 @@ public class TestEventExport {
   @JsonProperty("Specimen_collection_date_time")
   public String getSpecimenCollectionDateTime() {
     var testDuration =
-        deviceSpecimenType
-            .map(DeviceSpecimenType::getDeviceType)
-            .map(DeviceType::getTestLength)
-            .orElse(FALLBACK_DEFAULT_TEST_MINUTES);
+        deviceType.map(DeviceType::getTestLength).orElse(FALLBACK_DEFAULT_TEST_MINUTES);
     return dateToHealthCareString(
         convertToLocalDateTime(
             Date.from(
@@ -468,32 +471,42 @@ public class TestEventExport {
 
   @JsonProperty("Ordered_test_code")
   public String getOrderedTestCode() {
-    return deviceSpecimenType.map(dst -> dst.getDeviceType().getLoincCode()).orElse(null);
+    return deviceType.map(DeviceType::getLoincCode).orElse(null);
   }
 
   @JsonProperty("Specimen_source_site_code")
   public String getSpecimenSourceSiteCode() {
-    return deviceSpecimenType
-        .map(dst -> dst.getSpecimenType().getCollectionLocationCode())
-        .orElse(DEFAULT_LOCATION_CODE);
+    String specimenSourceSiteCodeFromSpecimenType =
+        specimenType.map(SpecimenType::getCollectionLocationCode).orElse(DEFAULT_LOCATION_CODE);
+
+    String specimenSourceSiteCodeFromDST =
+        deviceSpecimenType
+            .map(dst -> dst.getSpecimenType().getCollectionLocationCode())
+            .orElse(DEFAULT_LOCATION_CODE);
+
+    return Optional.of(specimenSourceSiteCodeFromSpecimenType)
+        .orElse(specimenSourceSiteCodeFromDST);
   }
 
   @JsonProperty("Specimen_type_code")
   public String getSpecimenTypeCode() {
-    return deviceSpecimenType.map(dst -> dst.getSpecimenType().getTypeCode()).orElse(null);
+    String specimenTypeCodeFromSpecimenType =
+        specimenType.map(SpecimenType::getTypeCode).orElse(null);
+
+    String specimenTypeCodeFromDST =
+        deviceSpecimenType.map(dst -> dst.getSpecimenType().getTypeCode()).orElse(null);
+
+    return Optional.ofNullable(specimenTypeCodeFromSpecimenType).orElse(specimenTypeCodeFromDST);
   }
 
   @JsonProperty("Instrument_ID")
   public String getInstrumentID() {
-    return deviceSpecimenType
-        .map(dst -> dst.getDeviceType().getInternalId())
-        .map(UUID::toString)
-        .orElse(null);
+    return deviceType.map(IdentifiedEntity::getInternalId).map(UUID::toString).orElse(null);
   }
 
   @JsonProperty("Device_ID")
   public String getDeviceID() {
-    return deviceSpecimenType.map(dst -> dst.getDeviceType().getModel()).orElse(null);
+    return deviceType.map(DeviceType::getModel).orElse(null);
   }
 
   @JsonProperty("Test_date")
