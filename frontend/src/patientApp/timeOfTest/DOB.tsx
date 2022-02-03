@@ -33,6 +33,10 @@ const DOB = () => {
     dobRef?.current?.focus();
   }, []);
 
+  const formatNote = (str: string, date: string, facility: string) => {
+    return str.replace("{date}", date).replace("{facility}", facility);
+  };
+
   const validateBirthDate = () => {
     const date = dateFromStrings(birthMonth, birthDay, birthYear);
     if (date.year() < 1900 || date.year() > moment().year()) {
@@ -149,7 +153,13 @@ const DOB = () => {
     <main>
       <div className="grid-container maxw-tablet">
         <p className="margin-top-3">{t("testResult.dob.enterDOB2")}</p>
-        <p>{t("testResult.dob.linkExpirationNotice")}</p>
+        <p>
+          {formatNote(
+            t("testResult.dob.linkExpirationNotice"),
+            "thing",
+            "facility"
+          )}
+        </p>
         <DateInput
           className="width-mobile"
           label={t("testResult.dob.dateOfBirth")}

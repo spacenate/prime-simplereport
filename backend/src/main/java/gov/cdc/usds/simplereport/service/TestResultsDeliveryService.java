@@ -79,7 +79,7 @@ public class TestResultsDeliveryService {
   public boolean smsTestResults(PatientLink patientLink) {
     String message =
         format(
-            "Your COVID-19 test result is ready to view. This link will expire after {0}: {1}",
+            "Your COVID-19 test result is ready to view. This link will expire on {0}: {1}. Please reach out to [testing facility name] if you have any issues accessing your result.",
             getExpirationDuration(patientLink), patientLinkUrl + patientLink.getInternalId());
     List<SmsAPICallResult> smsSendResults = smsService.sendToPatientLink(patientLink, message);
     return smsSendResults.stream().allMatch(SmsAPICallResult::isSuccessful);
