@@ -12,10 +12,10 @@ services:
     ports:
      - "8089:8089"
     volumes:
-      - ./:/mnt/locust
+      - ./locust:/mnt/locust
     command: -f /mnt/locust/locustfile.py --master -H http://locust-brain:8089
   locust-worker:
     image: locustio/locust
     volumes:
-      - ./:/mnt/locust
+      - ./locust:/mnt/locust
     command: -f /mnt/locust/locustfile.py --worker --master-host locust-brain
