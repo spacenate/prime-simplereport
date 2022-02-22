@@ -1,12 +1,13 @@
 import { render, screen, act } from "@testing-library/react";
 import { MockedProvider } from "@apollo/client/testing";
 import { Provider } from "react-redux";
-import { MemoryRouter } from "react-router";
+import { MemoryRouter, Route, Routes } from "react-router-dom";
 import configureStore from "redux-mock-store";
 
 import { GetManagedFacilitiesDocument } from "../../../generated/graphql";
 
 import ManageFacilitiesContainer from "./ManageFacilitiesContainer";
+import { deviceTypes } from "./FacilityFormContainer.test";
 
 const deviceSpecimenTypes: DeviceSpecimenType[] = [
   {
@@ -44,12 +45,7 @@ const mockFacility: Facility = {
   zipCode: "90000",
   phone: "(516) 432-1390",
   email: "testingsite@disorg.com",
-  defaultDevice: "bc0536ea-4564-4291-bbf3-0e7b0731f6e8",
-  deviceTypes: [
-    "bc0536ea-4564-4291-bbf3-0e7b0731f6e8",
-    "ee85bdfb-b6c9-4951-ae30-6c025be4580e",
-  ],
-  deviceSpecimenTypes: deviceSpecimenTypes,
+  deviceTypes,
   orderingProvider: {
     firstName: "Fred",
     middleName: null,
@@ -134,13 +130,18 @@ const mock = [
 describe("ManageFacilitiesContainer", () => {
   beforeEach(() => {
     render(
-      <MemoryRouter>
-        <Provider store={store}>
-          <MockedProvider mocks={mock}>
-            <ManageFacilitiesContainer />
-          </MockedProvider>
-        </Provider>
-      </MemoryRouter>
+      <Provider store={store}>
+        <MockedProvider mocks={mock}>
+          <MemoryRouter initialEntries={["/facilities"]}>
+            <Routes>
+              <Route
+                path="facilities"
+                element={<ManageFacilitiesContainer />}
+              />
+            </Routes>
+          </MemoryRouter>
+        </MockedProvider>
+      </Provider>
     );
   });
 

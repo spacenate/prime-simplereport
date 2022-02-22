@@ -1,5 +1,5 @@
 import { ReactElement, useState } from "react";
-import { Redirect } from "react-router";
+import { Navigate } from "react-router-dom";
 
 import { Card } from "../../commonComponents/Card/Card";
 import { CardBackground } from "../../commonComponents/CardBackground/CardBackground";
@@ -84,7 +84,7 @@ const OrganizationForm = () => {
       try {
         const res = await SignUpApi.createOrganization(organization);
         setOrgExternalId(res.orgExternalId);
-      } catch (error) {
+      } catch (error: any) {
         const message = error.message || error;
         setBackendError(organizationBackendErrors(message));
         setLoading(false);
@@ -109,16 +109,16 @@ const OrganizationForm = () => {
 
   if (orgExternalId) {
     return (
-      <Redirect
-        to={{
-          pathname: "/sign-up/identity-verification",
-          state: {
+      <Navigate
+        to="/sign-up/identity-verification"
+        state={
+          {
             orgExternalId: orgExternalId,
             firstName: organization.firstName,
             middleName: organization.middleName,
             lastName: organization.lastName,
-          } as PersonalDetailsFormProps,
-        }}
+          } as PersonalDetailsFormProps
+        }
       />
     );
   }
