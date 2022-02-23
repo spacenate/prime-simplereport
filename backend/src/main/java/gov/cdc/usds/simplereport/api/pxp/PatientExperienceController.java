@@ -4,17 +4,15 @@ import static org.springframework.web.context.request.RequestAttributes.SCOPE_RE
 
 import gov.cdc.usds.simplereport.api.model.errors.ExpiredPatientLinkException;
 import gov.cdc.usds.simplereport.api.model.pxp.PxpRequestWrapper;
-import gov.cdc.usds.simplereport.api.model.pxp.PxpVerifyResponse;
 import gov.cdc.usds.simplereport.api.model.pxp.PxpVerifyResponseV2;
-import gov.cdc.usds.simplereport.db.model.PatientLink;
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.TestEvent;
 import gov.cdc.usds.simplereport.db.model.TestOrder;
-import gov.cdc.usds.simplereport.db.model.auxiliary.OrderStatus;
 import gov.cdc.usds.simplereport.service.PatientLinkService;
 import gov.cdc.usds.simplereport.service.PersonService;
 import gov.cdc.usds.simplereport.service.TestEventService;
 import gov.cdc.usds.simplereport.service.TimeOfConsentService;
+import java.util.UUID;
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
@@ -38,7 +36,7 @@ import org.springframework.web.context.request.RequestContextHolder;
  * Because of this, every handler method of this controller is required to have an {@link
  * HttpServletRequest} argument named {@code request}.
  */
-@PostAuthorize("@restAuditLogManager.logRestSuccess(#request, returnObject)")
+// @PostAuthorize("@restAuditLogManager.logRestSuccess(#request, returnObject)")
 @RestController
 @RequestMapping("/pxp")
 @Validated
@@ -71,34 +69,39 @@ public class PatientExperienceController {
    * Verify that the patient-provided DOB matches the patient on file for the patient link id. It
    * returns the full patient object if so, otherwise it throws an exception
    */
-  @PreAuthorize(
-      "@patientLinkService.verifyPatientLink(#body.getPatientLinkId(), #body.getDateOfBirth())")
-  @PostMapping("/link/verify")
-  public PxpVerifyResponse getPatientLinkVerify(
-      @RequestBody PxpRequestWrapper<Void> body, HttpServletRequest request) {
+  //  @PreAuthorize(
+  //      "@patientLinkService.verifyPatientLink(#body.getPatientLinkId(), #body.getDateOfBirth())")
+  //  @PostMapping("/link/verify")
+  //  public PxpVerifyResponse getPatientLinkVerify(
+  //      @RequestBody PxpRequestWrapper<Void> body, HttpServletRequest request) {
+  //
+  //    CurrentPatientContextHolder _contextHolder =
+  //        (CurrentPatientContextHolder)
+  //            RequestContextHolder.currentRequestAttributes().getAttribute("context",
+  // SCOPE_REQUEST);
+  //
+  //    PatientLink pl = _contextHolder.getPatientLink();
+  //    OrderStatus os = _contextHolder.getLinkedOrder().getOrderStatus();
+  //    Person p = _contextHolder.getPatient();
+  //    TestEvent te =
+  //        os == OrderStatus.COMPLETED
+  //            ? _contextHolder.getLinkedOrder().getTestEvent()
+  //            : _tes.getLastTestResultsForPatient(p);
+  //    _tocs.storeTimeOfConsent(pl);
+  //
+  //    return new PxpVerifyResponse(p, os, te);
+  //  }
 
+  /** Verify that the patient-provided DOB matches the patient on file for the patient link id. */
+  @PreAuthorize(
+      "@patientLinkService.verifyPatientLink(#body.getPatientLinkId(), #body.getDateOfBirth(), #request)")
+  @PostMapping("/link/verify/v2")
+  public PxpVerifyResponseV2 getPatientLinkVerifyV2(
+      @RequestBody PxpRequestWrapper<Void> body, HttpServletRequest request) {
     CurrentPatientContextHolder _contextHolder =
         (CurrentPatientContextHolder)
             RequestContextHolder.currentRequestAttributes().getAttribute("context", SCOPE_REQUEST);
 
-    PatientLink pl = _contextHolder.getPatientLink();
-    OrderStatus os = _contextHolder.getLinkedOrder().getOrderStatus();
-    Person p = _contextHolder.getPatient();
-    TestEvent te =
-        os == OrderStatus.COMPLETED
-            ? _contextHolder.getLinkedOrder().getTestEvent()
-            : _tes.getLastTestResultsForPatient(p);
-    _tocs.storeTimeOfConsent(pl);
-
-    return new PxpVerifyResponse(p, os, te);
-  }
-
-  /** Verify that the patient-provided DOB matches the patient on file for the patient link id. */
-  @PreAuthorize(
-      "@patientLinkService.verifyPatientLink(#body.getPatientLinkId(), #body.getDateOfBirth())")
-  @PostMapping("/link/verify/v2")
-  public PxpVerifyResponseV2 getPatientLinkVerifyV2(
-      @RequestBody PxpRequestWrapper<Void> body, HttpServletRequest request) {
     Person patient = _contextHolder.getPatient();
     TestEvent testEvent = _contextHolder.getLinkedOrder().getTestEvent();
     _tocs.storeTimeOfConsent(_contextHolder.getPatientLink());
@@ -119,6 +122,11 @@ public class PatientExperienceController {
   public String getObfuscatedPatientNameFromLink(
       @RequestParam("patientLink") UUID patientLink, HttpServletRequest request)
       throws ExpiredPatientLinkException {
+
+    CurrentPatientContextHolder _contextHolder =
+        (CurrentPatientContextHolder)
+            RequestContextHolder.currentRequestAttributes().getAttribute("context", SCOPE_REQUEST);
+
     var link = _pls.getPatientLink(patientLink);
 
     if (link.isExpired()) {
@@ -132,36 +140,4 @@ public class PatientExperienceController {
 
     return p.getFirstName() + " " + p.getLastName().charAt(0) + ".";
   }
-
-  //  @PostMapping("/patient")
-  //  @PreAuthorize(
-  //      "@patientLinkService.verifyPatientLink(#body.getPatientLinkId(), #body.getDateOfBirth())")
-  //  public PxpVerifyResponse updatePatient(
-  //      @RequestBody PxpRequestWrapper<PersonUpdate> body, HttpServletRequest request) {
-  //    PersonUpdate person = body.getData();
-  //
-  //    var backwardsCompatibleEmails = new PatientEmailsHolder(person.getEmail(),
-  // person.getEmails());
-  //
-  //    Person updated =
-  //        _ps.updateMe(
-  //            StreetAddress.deAndReSerializeForSafety(person.getAddress()),
-  //            parseString(person.getCountry()),
-  //            parsePhoneNumbers(person.getPhoneNumbers()),
-  //            person.getRole(),
-  //            parseEmails(backwardsCompatibleEmails.getFullList()),
-  //            parseRace(person.getRace()),
-  //            parseEthnicity(person.getEthnicity()),
-  //            person.getTribalAffiliation(),
-  //            parseGender(person.getGender()),
-  //            person.getResidentCongregateSetting(),
-  //            person.getEmployedInHealthcare(),
-  //            person.getPreferredLanguage());
-  //
-  //    UUID plid = UUID.fromString(body.getPatientLinkId());
-  //    PatientLink pl = _pls.getPatientLink(plid);
-  //    OrderStatus os = pl.getTestOrder().getOrderStatus();
-  //    TestEvent te = _tes.getLastTestResultsForPatient(updated);
-  //    return new PxpVerifyResponse(updated, os, te);
-  //  }
 }

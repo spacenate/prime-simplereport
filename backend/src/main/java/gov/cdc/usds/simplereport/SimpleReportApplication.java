@@ -22,7 +22,9 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.boot.info.GitProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Profile;
+import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 @Slf4j
 @SpringBootApplication
@@ -39,6 +41,8 @@ import org.springframework.scheduling.annotation.EnableScheduling;
   AzureStorageQueueReportingProperties.class
 })
 @EnableScheduling
+@EnableJpaAuditing
+@EnableTransactionManagement
 public class SimpleReportApplication {
   public static void main(String[] args) {
     SpringApplication.run(SimpleReportApplication.class, args);
@@ -67,4 +71,20 @@ public class SimpleReportApplication {
   public CommandLineRunner logGitCommit(GitProperties gitProperties) {
     return args -> log.info("Current commit is: {}", gitProperties.getCommitId());
   }
+
+  //  @Bean
+  //  public RequestContextListener requestContextListener() {
+  //    return new RequestContextListener();
+  //  }
+
+  //  @Bean
+  //  @SessionScope
+  //  public AuditorAware<ApiUser> getCurrentApiUserProvider(ApiUserService userService) {
+  //    return () -> {
+  //      log.debug("Fetching current user for audit");
+  //      Optional<ApiUser> user =
+  // Optional.of(userService.getCurrentApiUserInContainedTransaction());
+  //      return user;
+  //    };
+  //  }
 }

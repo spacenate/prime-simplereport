@@ -43,14 +43,12 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.context.annotation.RequestScope;
-import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
 
 @Service
 @Transactional(readOnly = false)
 @Slf4j
-@RequestScope
+// @Scope(scopeName = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class ApiUserService {
 
   @Autowired private AuthorizationService _authService;
@@ -348,6 +346,7 @@ public class ApiUserService {
     CurrentPatientContextHolder _patientContextHolder =
         (CurrentPatientContextHolder)
             RequestContextHolder.currentRequestAttributes().getAttribute("context", SCOPE_REQUEST);
+
     Person patient = _patientContextHolder.getPatient();
     if (patient == null) {
       throw new UnidentifiedUserException();
@@ -455,8 +454,8 @@ public class ApiUserService {
   }
 
   private Optional<ApiUser> getCurrentNonOktaUser(IdentityAttributes userIdentity) {
-    RequestAttributes attributes = RequestContextHolder.currentRequestAttributes();
-    System.out.println(attributes);
+    //    RequestAttributes attributes = RequestContextHolder.currentRequestAttributes();
+    //    System.out.println("ATTRIBUTES" + attributes);
     CurrentPatientContextHolder _patientContextHolder =
         (CurrentPatientContextHolder)
             RequestContextHolder.currentRequestAttributes().getAttribute("context", SCOPE_REQUEST);
