@@ -7,6 +7,7 @@ import gov.cdc.usds.simplereport.service.sms.TextMessageStatusService;
 import java.util.Arrays;
 import java.util.HashMap;
 import javax.servlet.http.HttpServletRequest;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.util.MultiValueMap;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+@Slf4j
 @RestController
 @RequestMapping("/pxp/callback")
 @PreAuthorize("@textMessageStatusService.validateSmsCallback(#request)")
@@ -37,6 +39,7 @@ public class SmsCallbackController {
     webhookContextHolder.setIsWebhook(true);
     SmsStatusCallback body = mapToTextMessageSent(paramMap);
     statusService.saveTextMessageStatus(body.getMessageSid(), body.getMessageStatus());
+    log.info(body.getMessageStatus());
   }
 
   private SmsStatusCallback mapToTextMessageSent(MultiValueMap<String, String> paramMap) {

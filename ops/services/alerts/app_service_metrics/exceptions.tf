@@ -217,11 +217,9 @@ resource "azurerm_monitor_scheduled_query_rules_alert" "twilio_message_failures"
   enabled        = contains(var.disabled_alerts, "twilio_message_failures") ? false : true
 
   query = <<-QUERY
-requests
-${local.skip_on_weekends}
 dependencies
-   | where target has "twilio"
-   | where resultCode != 201
+${local.skip_on_weekends}
+  | where timestamp > ago(2h) and target has "twilio" and resultCode != 201
   QUERY
 
   severity    = 1
