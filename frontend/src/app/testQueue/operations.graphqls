@@ -1,0 +1,3 @@
+mutation submitTest($patientId: ID!) {
+    submitTest(patientId: $patientId)
+}

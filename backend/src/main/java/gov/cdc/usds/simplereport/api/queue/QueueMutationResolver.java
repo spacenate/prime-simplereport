@@ -46,6 +46,10 @@ public class QueueMutationResolver implements GraphQLMutationResolver {
         deviceSpecimenTypeId, TestResult.valueOf(result), patientID, dateTested);
   }
 
+  public AddTestResultResponse submitTest(UUID patientID) {
+    return _tos.submitTest(patientID);
+  }
+
   public ApiTestOrder editQueueItem(
       UUID id, String deviceId, UUID deviceSpecimenType, String result, Date dateTested) {
     UUID dst =
