@@ -206,10 +206,18 @@ public class TestOrderService {
         .orElseThrow(TestOrderService::noSuchOrderFound);
   }
 
+  public TestOrder editQueueItem(UUID deviceSpecimenTypeId, TestResult result, Date dateTested, UUID patientId) {
+    Organization org = _os.getCurrentOrganization();
+    Person person = _ps.getPatientNoPermissionsCheck(patientId, org);
+    TestOrder order =
+            _repo.fetchQueueItem(org, person).orElseThrow(TestOrderService::noSuchOrderFound);
+
+    return editQueueItem(order.getInternalId(), deviceSpecimenTypeId, result, dateTested);
+  }
+
   @AuthorizationConfiguration.RequirePermissionUpdateTestForTestOrder
-  @Deprecated // switch to specifying device-specimen combo
   public TestOrder editQueueItem(
-      UUID testOrderId, UUID deviceSpecimenTypeId, String result, Date dateTested) {
+      UUID testOrderId, UUID deviceSpecimenTypeId, TestResult result, Date dateTested) {
     lockOrder(testOrderId);
     try {
       TestOrder order = this.getTestOrder(testOrderId);
@@ -225,7 +233,7 @@ public class TestOrderService {
         }
       }
 
-      order.setResult(result == null ? null : TestResult.valueOf(result));
+      order.setResult(result);
 
       order.setDateTestedBackdate(dateTested);
 
@@ -235,22 +243,21 @@ public class TestOrderService {
     }
   }
 
+  /**
+   * Saves the given testOrder.
+   * Must be called after editQueueItem has finished executing, which is currently enforced on the frontend.
+   * Otherwise the test will be saved with the wrong data.
+   */
   @AuthorizationConfiguration.RequirePermissionSubmitTestForPatient
   @Transactional(noRollbackFor = {TwilioException.class, ApiException.class})
-  public AddTestResultResponse addTestResult(
-      UUID deviceSpecimenTypeId, TestResult result, UUID patientId, Date dateTested) {
+  public AddTestResultResponse addTestResult(UUID patientId) {
     Organization org = _os.getCurrentOrganization();
     Person person = _ps.getPatientNoPermissionsCheck(patientId, org);
     TestOrder order =
-        _repo.fetchQueueItem(org, person).orElseThrow(TestOrderService::noSuchOrderFound);
-
-    DeviceSpecimenType deviceSpecimen = _dts.getDeviceSpecimenType(deviceSpecimenTypeId);
+            _repo.fetchQueueItem(org, person).orElseThrow(TestOrderService::noSuchOrderFound);
 
     lockOrder(order.getInternalId());
     try {
-      order.setDeviceSpecimen(deviceSpecimen);
-      order.setResult(result);
-      order.setDateTestedBackdate(dateTested);
       order.markComplete();
 
       boolean hasPriorTests = _terepo.existsByPatient(person);

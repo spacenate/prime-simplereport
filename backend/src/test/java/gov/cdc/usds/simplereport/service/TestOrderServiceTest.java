@@ -135,6 +135,8 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     List<TestOrder> queue = _service.getQueue(facility.getInternalId());
     assertEquals(1, queue.size());
 
+    _service.editQueueItem(devA.getInternalId())
+
     // WHEN
     _service.addTestResult(
         devA.getInternalId(), TestResult.POSITIVE, patient.getInternalId(), null);
