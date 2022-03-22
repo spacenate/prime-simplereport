@@ -42,12 +42,16 @@ fi
 
 echo "Starting Docker Compose..."
 
-while getopts ":l" opt;
+while getopts ":l:c" opt;
 do
   case $opt in
     l)
       echo "Composing with Locust!"
       fileFlag="-f docker-compose.locust.yml"
+      ;;
+    c)
+      echo "Composing with Cypress!"
+      fileFlag="-f docker-compose.cypress.yml"
       ;;
     \?)
       echo "Invalid start option: -$OPTARG"

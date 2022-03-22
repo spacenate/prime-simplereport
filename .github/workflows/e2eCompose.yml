@@ -1,0 +1,24 @@
+name: Run Cypress integration tests locally in docker
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - alis/3280
+
+jobs:
+  docker:
+    runs-on: ubuntu-latest
+
+    steps:
+
+    - name: Checkout
+      uses: actions/checkout@v1
+
+    - name: Start containers
+      run: docker-compose -f docker-compose.cypress.yml up \
+        --abort-on-container-exit \
+        --exit-code-from cypress
+
+    - name: Stop containers
+      if: always()
+      run: docker-compose -f "docker-compose.cypress.yml" down

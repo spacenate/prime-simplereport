@@ -1,0 +1,20 @@
+services:
+  cypress:
+    # build:
+    #   context: frontend
+    # image: ghcr.io/cdcgov/prime-simplereport/cypress:latest
+    build:
+      context: cypress
+    container_name: cypress
+    restart: on-failure:5
+    env_file:
+      - cypress/.env.e2e
+    volumes:
+      - ./cypress/integration/:/app/cypress/integration/
+      - ./cypress/screenshots/:/app/cypress/screenshots/
+      - ./cypress/videos/:/app/cypress/videos/
+      - ./cypress/cypress.json:/app/cypress.json
+      - ./cypress/e2e.sh:/app/e2e.sh
+      - ./.git/:/app/.git/
+    expose:
+      - "8088"
