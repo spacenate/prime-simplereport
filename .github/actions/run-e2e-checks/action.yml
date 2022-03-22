@@ -58,7 +58,7 @@ runs:
       working-directory: ./frontend
       run: |
         echo "::group::Run Cypress verification"
-        ./e2e.sh -s "${{ env.E2E_SPEC_FILES }}" -r ${{ env.CYPRESS_BASE_URL }} -f /health/commit -p /app
+        ./e2e.sh -s "${{ env.E2E_SPEC_FILES }}" -r ${{ env.CYPRESS_BASE_URL }}
         echo "::endgroup::"
     - name: Archive cypress screenshots and videos
       uses: actions/upload-artifact@v3

@@ -1,0 +1,106 @@
+
+name: Run Cypress integration tests locally in docker
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - alis/3280-docker
+
+jobs:
+  docker:
+    runs-on: ubuntu-latest
+
+    steps:
+
+    - name: Checkout
+      uses: actions/checkout@v1
+    # - name: Set Swap Space
+    #   uses: pierotofy/set-swap-space@master
+    #   with:
+    #     swap-size-gb: 10
+
+    - name: Generate certs
+      run: |
+        sudo apt install libnss3-tools
+        brew install mkcert
+        mkcert -install
+        mkdir -p certs
+        cd certs
+        mkcert localhost.simplereport.gov
+        mv localhost.simplereport.gov.pem localhost.simplereport.gov.crt
+        mv localhost.simplereport.gov-key.pem localhost.simplereport.gov.key
+        cd ..
+
+    - name: Update files permissions
+      run: |
+        echo FAKE_ENV="true" >> .env
+        sudo chmod -R 777 backend
+        sudo chmod -R 777 frontend
+
+    - name: Login to GitHub Container Registry
+      uses: docker/login-action@v1
+      with:
+        registry: ghcr.io
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+
+    # echo "127.0.0.1 localhost.simplereport.gov" | sudo tee -a /etc/hosts
+
+    # - name: pull apps - This will only run against stg after merge to main
+    #   run: |
+    #     docker-compose -f docker-compose.yml -f docker-compose.cypress.yml -f docker-compose.ci.override.yml pull
+
+    - name: Docker compose up - Run Cypress
+      env:
+        # CI settings
+        CI: 1
+        # docker settings
+        DOCKER_CLIENT_TIMEOUT: 180
+        COMPOSE_HTTP_TIMEOUT: 180
+        # backend settings
+        SPRING_PROFILES_ACTIVE: e2e,db-dockerized
+        OKTA_TESTING_DISABLEHTTPSCHECK: "true"
+        OKTA_API_KEY: ${{ secrets.OKTA_API_KEY }}
+        OKTA_OAUTH2_CLIENT_ID: 0oa1k0163nAwfVxNW1d7
+        SMARTY_AUTH_ID: ${{ secrets.SMARTY_AUTH_ID }}
+        SMARTY_AUTH_TOKEN: ${{ secrets.SMARTY_AUTH_TOKEN }}
+        SPRING_LIQUIBASE_ENABLED: "true"
+        GIT_DISCOVERY_ACROSS_FILESYSTEM: 1
+        # cypress settings
+        CYPRESS_OKTA_USERNAME: ${{ secrets.CYPRESS_OKTA_USERNAME }}
+        CYPRESS_OKTA_PASSWORD: ${{ secrets.CYPRESS_OKTA_PASSWORD }}
+        CYPRESS_OKTA_SECRET: ${{ secrets.CYPRESS_OKTA_SECRET }}
+        WIREMOCK_URL: "http://cypress:8088"
+        SPEC_PATH: "cypress/integration/00*,cypress/integration/01*"
+        # frontend settings
+        # REACT_APP_OKTA_URL: "http://cypress:8088"
+        REACT_APP_OKTA_CLIENT_ID: 0oa1k0163nAwfVxNW1d7
+        REACT_APP_BASE_URL: https://localhost.simplereport.gov
+        REACT_APP_BACKEND_URL: https://localhost.simplereport.gov/api
+        PUBLIC_URL: /app/
+        REACT_APP_OKTA_ENABLED: "true"
+        REACT_APP_DISABLE_MAINTENANCE_BANNER: "true"
+
+# TEST_ENV="https://nginx:443"
+# CHECK_COMMIT="$(git rev-parse HEAD)"
+# BACKEND_URL_PATH="/api/health"
+# PUBLIC_URL="/app"
+# FRONTEND_URL_PATH="/health/commit"
+# RUN_OPEN=false
+# BROWSER="firefox"
+
+      run: |
+        docker-compose --env-file .env -f docker-compose.yml -f docker-compose.cypress.yml -f docker-compose.ci.override.yml up --abort-on-container-exit --exit-code-from cypress
+
+    - name: Stop containers
+      if: always()
+      run: docker-compose -f "docker-compose.yml" -f "docker-compose.cypress.yml" down
+
+    - name: Archive cypress failures
+      if: failure()
+      uses: actions/upload-artifact@v2
+      with:
+        name: cypress-results
+        path: |
+          cypress/videos/*
+          cypress/screenshots/*

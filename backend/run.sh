@@ -6,6 +6,7 @@
 # This enables live reload of the backend for development.
 ###########
 
+# chown -R gradle:gradle ./
 # Start a continuous build process and send to background
 gradle --no-daemon -t build -x test -x checkstyleMain -x checkstyleTest -x spotlessCheck -x bootBuildInfo &
 # Wait for initial build to complete

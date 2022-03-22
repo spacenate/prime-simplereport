@@ -1,0 +1,41 @@
+services:
+  cypress:
+    build:
+      context: cypress
+    image: ghcr.io/cdcgov/prime-simplereport/cypress:latest
+    container_name: cypress
+    restart: on-failure:5
+    environment:
+      CYPRESS_OKTA_USERNAME: $CYPRESS_OKTA_USERNAME
+      CYPRESS_OKTA_PASSWORD: $CYPRESS_OKTA_PASSWORD
+      CYPRESS_OKTA_SECRET: $CYPRESS_OKTA_SECRET
+      SPEC_PATH: $SPEC_PATH
+    volumes:
+      - ./cypress/integration/:/app/cypress/integration/
+      - ./cypress/screenshots/:/app/cypress/screenshots/
+      - ./cypress/videos/:/app/cypress/videos/
+      - ./cypress/cypress.json:/app/cypress.json
+      - ./cypress/e2e.sh:/app/e2e.sh
+      - ./.git/:/app/.git/
+    expose:
+      - "8088"
+    command:
+      ["-s", "$SPEC_PATH"]
+
+  # wiremock-account-creation:
+  #   image: wiremock/wiremock:2.32.0
+  #   container_name: accountCreation
+  #   ports:
+  #     - "8088"
+  #   command: ["--local-response-templating", "--port", "8088", "--root-dir", "/home/wiremock/accountCreation"]
+  #   volumes:
+  #     - ./cypress/stubs/:/home/wiremock/
+
+  # wiremock-org-sign-up:
+  #   image: wiremock/wiremock:2.32.0
+  #   container_name: OrgSignUp
+  #   ports:
+  #     - "8088"
+  #   command: ["--local-response-templating", "--port", "8088", "--root-dir", "/home/wiremock/OrgSignUp"]
+  #   volumes:
+  #     - ./cypress/stubs/:/home/wiremock/

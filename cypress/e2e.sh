@@ -19,10 +19,13 @@ OPTIONS:
 EOF
 }
 
+# echo "127.0.0.1 localhost.simplereport.gov" | tee -a /etc/hosts
+
 SPEC_PATH="cypress/integration/**"
-TEST_ENV="http://localhost.simplereport.gov"
+TEST_ENV="https://localhost.simplereport.gov"
 CHECK_COMMIT="$(git rev-parse HEAD)"
 BACKEND_URL_PATH="/api/health"
+PUBLIC_URL="/app"
 FRONTEND_URL_PATH="/health/commit"
 RUN_OPEN=false
 BROWSER="firefox"
@@ -70,6 +73,7 @@ echo
 [[ -n $CHECK_COMMIT ]] && echo "Current commit-----------$CHECK_COMMIT"
 [[ -n $TEST_ENV ]] && echo "Testing against URL------$TEST_ENV"
 [[ -n $BACKEND_URL_PATH ]] && echo "Backend health route-----$BACKEND_URL_PATH"
+[[ -n $PUBLIC_URL ]] && echo "Public url---------------$PUBLIC_URL"
 [[ -n $FRONTEND_URL_PATH ]] && echo "Frontent health route----$FRONTEND_URL_PATH"
 [[ -n $RUN_OPEN ]] && echo "Run as interactive-------$RUN_OPEN"
 echo 
@@ -101,7 +105,7 @@ polls=0
 while [[ $result -ne 1 && $polls -lt 240 ]]; do
   ((polls++))
   sleep 1
-  result=$(curl -skL "${TEST_ENV}${FRONTEND_URL_PATH}" | grep -c '<title>SimpleReport</title>')
+  result=$(curl -skL "${TEST_ENV}${PUBLIC_URL}${FRONTEND_URL_PATH}" | grep -c '<title>SimpleReport</title>')
 done
 if [[ $result -ne 1 ]]; then
   echo 'Frontend never started. Exiting...'
@@ -114,10 +118,10 @@ echo 'App is online! Starting Cypress...'
 echo
 
 if [[ $RUN_OPEN = true ]]; then
-  export CYPRESS_baseurl="$TEST_ENV"
+  export CYPRESS_baseurl="$TEST_ENV$PUBLIC_URL"
   export CYPRESS_CHECK_COMMIT="$CHECK_COMMIT"
   export CYPRESS_CHECK_URL="$FRONTEND_URL_PATH"
   yarn run cypress open
 else
-  yarn run cypress run --browser "$BROWSER" --spec "$SPEC_PATH" --config baseUrl="$TEST_ENV" --env CHECK_COMMIT="$CHECK_COMMIT",CHECK_URL="$FRONTEND_URL_PATH"
+  yarn run cypress run --browser "$BROWSER" --spec "$SPEC_PATH" --config baseUrl="$TEST_ENV$PUBLIC_URL" --env CHECK_COMMIT="$CHECK_COMMIT",CHECK_URL="$FRONTEND_URL_PATH"
 fi;
