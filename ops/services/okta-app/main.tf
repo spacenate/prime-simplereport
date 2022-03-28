@@ -2,7 +2,6 @@ locals {
   is_prod = var.env == "prod"
 }
 
-
 resource "okta_app_oauth" "app" {
   label = local.is_prod ? "Simple Report" : "Simple Report (${var.env})"
   type  = "web"
@@ -24,6 +23,9 @@ resource "okta_app_oauth" "app" {
   hide_ios                  = false
   hide_web                  = false
   login_mode                = "SPEC"
+
+  skip_users  = true
+  skip_groups = true
 
   lifecycle {
     ignore_changes = [
@@ -67,4 +69,11 @@ resource "okta_auth_server_scope" "sr_env" {
   description      = "${upper(var.env)}-only OAUTH scope for Simple Report application"
   metadata_publish = "NO_CLIENTS"
   default          = false
+}
+
+resource "okta_trusted_origin" "sr_trusted_origin" {
+  for_each = { for origin in var.trusted_origins : origin.name => origin }
+  name     = each.value.name
+  origin   = each.value.url
+  scopes   = each.value.scopes
 }

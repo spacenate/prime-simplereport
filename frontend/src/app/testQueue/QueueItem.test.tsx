@@ -15,12 +15,14 @@ jest.mock("../TelemetryService", () => ({
   getAppInsights: jest.fn(),
 }));
 
-const mockPush = jest.fn();
-jest.mock("react-router-dom", () => ({
-  useHistory: () => ({
-    push: mockPush,
-  }),
-}));
+const mockNavigate = jest.fn();
+jest.mock("react-router-dom", () => {
+  const original = jest.requireActual("react-router-dom");
+  return {
+    ...original,
+    useNavigate: () => mockNavigate,
+  };
+});
 
 const initialDateString = "2021-02-14";
 const updatedDateString = "2021-03-10";
@@ -108,7 +110,7 @@ describe("QueueItem", () => {
     const patientName = screen.getByText("Potter, Harry James");
     expect(patientName).toBeInTheDocument();
     userEvent.click(patientName);
-    expect(mockPush).toHaveBeenCalledWith({
+    expect(mockNavigate).toHaveBeenCalledWith({
       pathname: "/patient/f5c7658d-a0d5-4ec5-a1c9-eafc85fe7554",
       search: "?facility=Hogwarts+123",
     });
@@ -139,7 +141,10 @@ describe("QueueItem", () => {
       </MockedProvider>
     );
 
-    userEvent.type(screen.getByLabelText("Device", { exact: false }), "lumira");
+    userEvent.type(
+      screen.getAllByLabelText("Device", { exact: false })[1],
+      "lumira"
+    );
 
     expect(await screen.findByTestId("timer")).toHaveTextContent("10:00");
   });
@@ -169,7 +174,9 @@ describe("QueueItem", () => {
       </MockedProvider>
     );
 
-    const deviceDropdown = await screen.findByLabelText("Device");
+    const deviceDropdown = (
+      await screen.findAllByLabelText("Device", { exact: false })
+    )[1];
 
     userEvent.selectOptions(deviceDropdown, "Access Bio CareStart");
 
@@ -297,7 +304,9 @@ describe("QueueItem", () => {
       </>
     );
 
-    const deviceDropdown = await screen.findByLabelText("Device");
+    const deviceDropdown = (
+      await screen.findAllByLabelText("Device", { exact: false })
+    )[1];
 
     // Change device type
     userEvent.selectOptions(deviceDropdown, "LumiraDX");
@@ -559,6 +568,62 @@ describe("QueueItem", () => {
     await waitFor(async () => {
       expect(await screen.findByText("Invalid test date")).toBeInTheDocument();
     });
+  });
+
+  it("highlights the test card where the validation failure occurs", async () => {
+    render(
+      <MockedProvider mocks={mocks}>
+        <Provider store={store}>
+          <QueueItem
+            internalId={testProps.internalId}
+            patient={testProps.patient}
+            askOnEntry={testProps.askOnEntry}
+            selectedDeviceId={testProps.selectedDeviceId}
+            selectedDeviceTestLength={testProps.selectedDeviceTestLength}
+            selectedDeviceSpecimenTypeId={
+              testProps.selectedDeviceSpecimenTypeId
+            }
+            deviceSpecimenTypes={testProps.deviceSpecimenTypes}
+            selectedTestResult={testProps.selectedTestResult}
+            devices={testProps.devices}
+            refetchQueue={testProps.refetchQueue}
+            facilityId={testProps.facilityId}
+            dateTestedProp={testProps.dateTestedProp}
+            facilityName="Foo facility"
+          />
+        </Provider>
+      </MockedProvider>
+    );
+
+    // Enter an invalid (future) date on the first test card
+    const toggle = await screen.findByLabelText("Current date/time");
+    userEvent.click(toggle);
+    const dateInput = await screen.findByTestId("test-date");
+    expect(dateInput).toBeInTheDocument();
+    userEvent.type(dateInput, moment().add(5, "days").format("YYYY-MM-DD"));
+    dateInput.blur();
+
+    // Select result
+    userEvent.click(
+      await screen.findByLabelText("Inconclusive", {
+        exact: false,
+      })
+    );
+
+    await waitFor(async () =>
+      expect(await screen.findByText("Submit")).toBeEnabled()
+    );
+
+    userEvent.click(await screen.findByText("Submit"));
+
+    const updatedTestCard = await screen.findByTestId(
+      `test-card-${internalId}`
+    );
+    expect(updatedTestCard).toHaveClass("prime-queue-item__error");
+    const dateLabel = await screen.findByText("Test date and time");
+    expect(dateLabel).toHaveClass("queue-item-error-message");
+    const updatedDateInput = await screen.findByTestId("test-date");
+    expect(updatedDateInput).toHaveClass("card-test-input__error");
   });
 
   it("displays person's mobile phone numbers", async () => {

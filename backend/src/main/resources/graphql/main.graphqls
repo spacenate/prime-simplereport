@@ -233,7 +233,6 @@ type TestResult {
   symptoms: String
   symptomOnset: LocalDate
   deviceType: DeviceType
-  deviceSpecimenType: DeviceSpecimenType
   result: String
   dateTested: DateTime
   testPerformed: TestDescription!
@@ -576,13 +575,6 @@ type Mutation {
     patientId: ID!
     dateTested: DateTime
   ): AddTestResultResponse @requiredPermissions(allOf: ["SUBMIT_TEST"])
-  addTestResult(
-    deviceId: String!
-    deviceSpecimenType: ID
-    result: String!
-    patientId: ID!
-    dateTested: DateTime
-  ): TestOrder @requiredPermissions(allOf: ["SUBMIT_TEST"])
   editQueueItem(
     id: ID!
     deviceId: String
