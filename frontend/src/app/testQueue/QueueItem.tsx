@@ -51,6 +51,7 @@ export const EDIT_QUEUE_ITEM = gql`
   mutation EditQueueItem(
     $id: ID!
     $deviceId: String
+    $specimenId: String
     $deviceSpecimenType: ID
     $result: String
     $dateTested: DateTime
@@ -59,6 +60,7 @@ export const EDIT_QUEUE_ITEM = gql`
       id: $id
       deviceId: $deviceId
       deviceSpecimenType: $deviceSpecimenType
+      specimenId: $specimenId
       result: $result
       dateTested: $dateTested
     ) {
@@ -85,6 +87,7 @@ export const EDIT_QUEUE_ITEM = gql`
 interface EditQueueItemParams {
   id: string;
   deviceId?: string;
+  specimenId?: string;
   deviceSpecimenType: string;
   result?: TestResult;
   dateTested?: string;
@@ -95,6 +98,7 @@ interface EditQueueItemResponse {
     result: TestResult;
     dateTested: string;
     deviceType: { internalId: string; testLength: number };
+    specimenType: { internalId: string };
     deviceSpecimenType: DeviceSpecimenType;
   };
 }
@@ -103,6 +107,7 @@ export const SUBMIT_TEST_RESULT = gql`
   mutation SubmitTestResult(
     $patientId: ID!
     $deviceId: String!
+    $specimenId: String!
     $deviceSpecimenType: ID
     $result: String!
     $dateTested: DateTime
@@ -110,6 +115,7 @@ export const SUBMIT_TEST_RESULT = gql`
     addTestResultNew(
       patientId: $patientId
       deviceId: $deviceId
+      specimenId: $specimenId
       deviceSpecimenType: $deviceSpecimenType
       result: $result
       dateTested: $dateTested
@@ -174,6 +180,7 @@ export interface QueueItemProps {
   deviceSpecimenTypes: DeviceSpecimenType[];
   askOnEntry: AoEAnswers;
   selectedDeviceId: string;
+  selectedSpecimenId: string;
   selectedDeviceSpecimenTypeId: string;
   selectedDeviceTestLength: number;
   selectedTestResult: TestResult;
@@ -185,6 +192,7 @@ export interface QueueItemProps {
 
 interface updateQueueItemProps {
   deviceId?: string;
+  specimenId?: string;
   deviceSpecimenType: string;
   testLength?: number;
   result?: TestResult;
@@ -199,6 +207,7 @@ const QueueItem = ({
   deviceSpecimenTypes,
   askOnEntry,
   selectedDeviceId,
+  selectedSpecimenId,
   selectedDeviceSpecimenTypeId,
   selectedDeviceTestLength,
   selectedTestResult,
@@ -243,7 +252,8 @@ const QueueItem = ({
   }, [askOnEntry]);
 
   const [deviceId, updateDeviceId] = useState<string>(selectedDeviceId);
-  const [specimenId, updateSpecimenId] = useState<string>("");
+  //const [specimenId, updateSpecimenId] = useState<string>("");
+  const [specimenId, updateSpecimenId] = useState<string>(selectedSpecimenId);
   const [deviceSpecimenTypeId, updateDeviceSpecimenTypeId] = useState(
     selectedDeviceSpecimenTypeId
   );
@@ -398,6 +408,7 @@ const QueueItem = ({
         variables: {
           patientId: patient.internalId,
           deviceId: deviceId,
+          specimenId: specimenId,
           deviceSpecimenType: deviceSpecimenTypeId,
           result: testResultValue,
           dateTested: shouldUseCurrentDateTime() ? null : dateTested,
@@ -418,6 +429,7 @@ const QueueItem = ({
         variables: {
           id: internalId,
           deviceId: props.deviceId,
+          specimenId: props.specimenId,
           result: props.result,
           dateTested: props.dateTested,
           deviceSpecimenType: props.deviceSpecimenType,
@@ -498,6 +510,7 @@ const QueueItem = ({
       debounceTimer = setTimeout(async () => {
         await updateQueueItem({
           deviceId,
+          specimenId,
           dateTested,
           deviceSpecimenType: deviceSpecimenTypeId,
           result: testResultValue,
@@ -511,6 +524,7 @@ const QueueItem = ({
     };
   }, [
     deviceId,
+    specimenId,
     deviceSpecimenTypeId,
     dateTested,
     testResultValue,

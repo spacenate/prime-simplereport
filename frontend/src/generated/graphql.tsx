@@ -108,6 +108,7 @@ export type Facility = {
   defaultDeviceSpecimen?: Maybe<Scalars["ID"]>;
   /** @deprecated kept for compatibility */
   defaultDeviceType?: Maybe<DeviceType>;
+  defaultSpecimenType?: Maybe<SpecimenType>;
   /** @deprecated kept for compatibility */
   deviceSpecimenTypes?: Maybe<Array<Maybe<DeviceSpecimenType>>>;
   deviceTypes?: Maybe<Array<Maybe<DeviceType>>>;
@@ -266,6 +267,7 @@ export type MutationAddTestResultNewArgs = {
   deviceSpecimenType?: InputMaybe<Scalars["ID"]>;
   patientId: Scalars["ID"];
   result: Scalars["String"];
+  specimenId: Scalars["String"];
 };
 
 export type MutationAddUserArgs = {
@@ -366,6 +368,7 @@ export type MutationEditQueueItemArgs = {
   deviceSpecimenType?: InputMaybe<Scalars["ID"]>;
   id: Scalars["ID"];
   result?: InputMaybe<Scalars["String"]>;
+  specimenId?: InputMaybe<Scalars["String"]>;
 };
 
 export type MutationMarkFacilityAsDeletedArgs = {
@@ -863,6 +866,7 @@ export type TestOrder = {
   pregnancy?: Maybe<Scalars["String"]>;
   reasonForCorrection?: Maybe<Scalars["String"]>;
   result?: Maybe<Scalars["String"]>;
+  specimenType?: Maybe<SpecimenType>;
   symptomOnset?: Maybe<Scalars["LocalDate"]>;
   symptoms?: Maybe<Scalars["String"]>;
 };
@@ -882,6 +886,7 @@ export type TestResult = {
   pregnancy?: Maybe<Scalars["String"]>;
   reasonForCorrection?: Maybe<Scalars["String"]>;
   result?: Maybe<Scalars["String"]>;
+  specimenType?: Maybe<SpecimenType>;
   symptomOnset?: Maybe<Scalars["LocalDate"]>;
   symptoms?: Maybe<Scalars["String"]>;
   testPerformed: TestDescription;
@@ -1734,6 +1739,7 @@ export type RemovePatientFromQueueMutation = {
 export type EditQueueItemMutationVariables = Exact<{
   id: Scalars["ID"];
   deviceId?: InputMaybe<Scalars["String"]>;
+  specimenId?: InputMaybe<Scalars["String"]>;
   deviceSpecimenType?: InputMaybe<Scalars["ID"]>;
   result?: InputMaybe<Scalars["String"]>;
   dateTested?: InputMaybe<Scalars["DateTime"]>;
@@ -1775,6 +1781,7 @@ export type EditQueueItemMutation = {
 export type SubmitTestResultMutationVariables = Exact<{
   patientId: Scalars["ID"];
   deviceId: Scalars["String"];
+  specimenId: Scalars["String"];
   deviceSpecimenType?: InputMaybe<Scalars["ID"]>;
   result: Scalars["String"];
   dateTested?: InputMaybe<Scalars["DateTime"]>;
@@ -1820,6 +1827,14 @@ export type GetFacilityQueueQuery = {
                   name: string;
                   model: string;
                   testLength?: number | null | undefined;
+                }
+              | null
+              | undefined;
+            specimenType?:
+              | {
+                  __typename?: "SpecimenType";
+                  internalId: string;
+                  name: string;
                 }
               | null
               | undefined;
@@ -5164,6 +5179,7 @@ export const EditQueueItemDocument = gql`
   mutation EditQueueItem(
     $id: ID!
     $deviceId: String
+    $specimenId: String
     $deviceSpecimenType: ID
     $result: String
     $dateTested: DateTime
@@ -5172,6 +5188,7 @@ export const EditQueueItemDocument = gql`
       id: $id
       deviceId: $deviceId
       deviceSpecimenType: $deviceSpecimenType
+      specimenId: $specimenId
       result: $result
       dateTested: $dateTested
     ) {
@@ -5214,6 +5231,7 @@ export type EditQueueItemMutationFn = Apollo.MutationFunction<
  *   variables: {
  *      id: // value for 'id'
  *      deviceId: // value for 'deviceId'
+ *      specimenId: // value for 'specimenId'
  *      deviceSpecimenType: // value for 'deviceSpecimenType'
  *      result: // value for 'result'
  *      dateTested: // value for 'dateTested'
@@ -5244,6 +5262,7 @@ export const SubmitTestResultDocument = gql`
   mutation SubmitTestResult(
     $patientId: ID!
     $deviceId: String!
+    $specimenId: String!
     $deviceSpecimenType: ID
     $result: String!
     $dateTested: DateTime
@@ -5251,6 +5270,7 @@ export const SubmitTestResultDocument = gql`
     addTestResultNew(
       patientId: $patientId
       deviceId: $deviceId
+      specimenId: $specimenId
       deviceSpecimenType: $deviceSpecimenType
       result: $result
       dateTested: $dateTested
@@ -5282,6 +5302,7 @@ export type SubmitTestResultMutationFn = Apollo.MutationFunction<
  *   variables: {
  *      patientId: // value for 'patientId'
  *      deviceId: // value for 'deviceId'
+ *      specimenId: // value for 'specimenId'
  *      deviceSpecimenType: // value for 'deviceSpecimenType'
  *      result: // value for 'result'
  *      dateTested: // value for 'dateTested'
@@ -5322,6 +5343,10 @@ export const GetFacilityQueueDocument = gql`
         name
         model
         testLength
+      }
+      specimenType {
+        internalId
+        name
       }
       deviceSpecimenType {
         internalId

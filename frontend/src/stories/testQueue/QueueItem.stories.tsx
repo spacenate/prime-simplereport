@@ -93,6 +93,7 @@ const defaultProps: QueueItemProps = {
     symptoms: "{}",
   } as any,
   selectedDeviceId: "tp4000",
+  selectedSpecimenId: "az9999",
   selectedDeviceTestLength: 0.1,
   selectedTestResult: "UNKNOWN",
   dateTestedProp: "",

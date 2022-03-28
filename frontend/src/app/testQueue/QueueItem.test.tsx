@@ -64,6 +64,7 @@ describe("QueueItem", () => {
             patient={testProps.patient}
             askOnEntry={testProps.askOnEntry}
             selectedDeviceId={testProps.selectedDeviceId}
+            selectedSpecimenId={testProps.selectedSpecimenId}
             selectedDeviceTestLength={testProps.selectedDeviceTestLength}
             selectedDeviceSpecimenTypeId={
               testProps.selectedDeviceSpecimenTypeId
@@ -92,6 +93,7 @@ describe("QueueItem", () => {
             patient={testProps.patient}
             askOnEntry={testProps.askOnEntry}
             selectedDeviceId={testProps.selectedDeviceId}
+            selectedSpecimenId={testProps.selectedSpecimenId}
             selectedDeviceTestLength={testProps.selectedDeviceTestLength}
             selectedDeviceSpecimenTypeId={
               testProps.selectedDeviceSpecimenTypeId
@@ -125,6 +127,7 @@ describe("QueueItem", () => {
             patient={testProps.patient}
             askOnEntry={testProps.askOnEntry}
             selectedDeviceId={testProps.selectedDeviceId}
+            selectedSpecimenId={testProps.selectedSpecimenId}
             selectedDeviceTestLength={testProps.selectedDeviceTestLength}
             selectedDeviceSpecimenTypeId={
               testProps.selectedDeviceSpecimenTypeId
@@ -158,6 +161,7 @@ describe("QueueItem", () => {
             patient={testProps.patient}
             askOnEntry={testProps.askOnEntry}
             selectedDeviceId={testProps.selectedDeviceId}
+            selectedSpecimenId={testProps.selectedSpecimenId}
             selectedDeviceTestLength={testProps.selectedDeviceTestLength}
             selectedDeviceSpecimenTypeId={
               testProps.selectedDeviceSpecimenTypeId
@@ -198,6 +202,7 @@ describe("QueueItem", () => {
             patient={testProps.patient}
             askOnEntry={testProps.askOnEntry}
             selectedDeviceId={testProps.selectedDeviceId}
+            selectedSpecimenId={testProps.selectedSpecimenId}
             selectedDeviceTestLength={testProps.selectedDeviceTestLength}
             selectedDeviceSpecimenTypeId={
               testProps.selectedDeviceSpecimenTypeId
@@ -244,6 +249,7 @@ describe("QueueItem", () => {
             id: internalId,
             deviceSpecimenType: "device-specimen-2",
             deviceId: "lumira",
+            specimenId: "specimen-2",
             result: "POSITIVE",
           },
         },
@@ -280,6 +286,7 @@ describe("QueueItem", () => {
               patient={testProps.patient}
               askOnEntry={testProps.askOnEntry}
               selectedDeviceId={testProps.selectedDeviceId}
+              selectedSpecimenId={testProps.selectedSpecimenId}
               selectedDeviceTestLength={testProps.selectedDeviceTestLength}
               selectedDeviceSpecimenTypeId={
                 testProps.selectedDeviceSpecimenTypeId
@@ -336,6 +343,7 @@ describe("QueueItem", () => {
               id: internalId,
               deviceSpecimenType: "device-specimen-1",
               deviceId: internalId,
+              specimenId: "specimen-1",
               result: "UNDETERMINED",
             },
           },
@@ -363,6 +371,7 @@ describe("QueueItem", () => {
             variables: {
               patientId: internalId,
               deviceId: internalId,
+              specimenId: "specimen-1",
               deviceSpecimenType: "device-specimen-1",
               result: "UNDETERMINED",
               dateTested: null,
@@ -393,6 +402,7 @@ describe("QueueItem", () => {
                 patient={testProps.patient}
                 askOnEntry={testProps.askOnEntry}
                 selectedDeviceId={testProps.selectedDeviceId}
+                selectedSpecimenId={testProps.selectedSpecimenId}
                 selectedDeviceTestLength={testProps.selectedDeviceTestLength}
                 selectedDeviceSpecimenTypeId={
                   testProps.selectedDeviceSpecimenTypeId
@@ -478,6 +488,7 @@ describe("QueueItem", () => {
             patient={testProps.patient}
             askOnEntry={testProps.askOnEntry}
             selectedDeviceId={testProps.selectedDeviceId}
+            selectedSpecimenId={testProps.selectedSpecimenId}
             selectedDeviceTestLength={testProps.selectedDeviceTestLength}
             selectedDeviceSpecimenTypeId={
               testProps.selectedDeviceSpecimenTypeId
@@ -513,6 +524,7 @@ describe("QueueItem", () => {
               patient={testProps.patient}
               askOnEntry={testProps.askOnEntry}
               selectedDeviceId={testProps.selectedDeviceId}
+              selectedSpecimenId={testProps.selectedSpecimenId}
               selectedDeviceTestLength={testProps.selectedDeviceTestLength}
               selectedDeviceSpecimenTypeId={
                 testProps.selectedDeviceSpecimenTypeId
@@ -579,6 +591,7 @@ describe("QueueItem", () => {
             patient={testProps.patient}
             askOnEntry={testProps.askOnEntry}
             selectedDeviceId={testProps.selectedDeviceId}
+            selectedSpecimenId={testProps.selectedSpecimenId}
             selectedDeviceTestLength={testProps.selectedDeviceTestLength}
             selectedDeviceSpecimenTypeId={
               testProps.selectedDeviceSpecimenTypeId
@@ -635,6 +648,7 @@ describe("QueueItem", () => {
             patient={testProps.patient}
             askOnEntry={testProps.askOnEntry}
             selectedDeviceId={testProps.selectedDeviceId}
+            selectedSpecimenId={testProps.selectedSpecimenId}
             selectedDeviceTestLength={testProps.selectedDeviceTestLength}
             selectedDeviceSpecimenTypeId={
               testProps.selectedDeviceSpecimenTypeId
@@ -674,6 +688,7 @@ describe("QueueItem", () => {
               patient={testProps.patient}
               askOnEntry={testProps.askOnEntry}
               selectedDeviceId={testProps.selectedDeviceId}
+              selectedSpecimenId={testProps.selectedSpecimenId}
               selectedDeviceTestLength={testProps.selectedDeviceTestLength}
               selectedDeviceSpecimenTypeId={
                 testProps.selectedDeviceSpecimenTypeId
@@ -704,7 +719,7 @@ describe("QueueItem", () => {
     it("tracks submitted test result as custom event", async () => {
       // Submit
       userEvent.click(screen.getByText("Submit"));
-      userEvent.click(screen.getByText("Submit anyway"));
+      //userEvent.click(screen.getByText("Submit anyway"));
 
       expect(trackEventMock).toHaveBeenCalledWith({
         name: "Submit Test Result",
@@ -774,6 +789,7 @@ const testProps = {
   } as any,
   testResultPreference: "SMS",
   selectedDeviceId: internalId,
+  selectedSpecimenId: "specimen-1",
   selectedDeviceTestLength: 10,
   selectedDeviceSpecimenTypeId: "device-specimen-1",
   selectedTestResult: {} as any,
@@ -821,6 +837,7 @@ const mocks = [
       variables: {
         id: internalId,
         deviceId: "lumira",
+        specimenId: "specimen-2",
         deviceSpecimenType: "device-specimen-2",
         result: {},
       },
@@ -846,6 +863,7 @@ const mocks = [
       variables: {
         id: internalId,
         deviceId: internalId,
+        specimenId: "specimen-1",
         deviceSpecimenType: "device-specimen-1",
         dateTested: nowUTC,
         result: {},
@@ -872,6 +890,7 @@ const mocks = [
       variables: {
         id: internalId,
         deviceId: internalId,
+        specimenId: "specimen-1",
         deviceSpecimenType: "device-specimen-1",
         dateTested: updatedDateUTC,
         result: {},
@@ -901,6 +920,7 @@ const mocks = [
       variables: {
         id: internalId,
         deviceId: internalId,
+        specimenId: "specimen-1",
         deviceSpecimenType: "device-specimen-1",
         dateTested: updatedDateTimeUTC,
         result: {},

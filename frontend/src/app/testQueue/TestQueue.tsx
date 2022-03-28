@@ -53,6 +53,10 @@ export const queueQuery = gql`
         model
         testLength
       }
+      specimenType {
+        internalId
+        name
+      }
       deviceSpecimenType {
         internalId
       }
@@ -231,6 +235,9 @@ const TestQueue: React.FC<Props> = ({ activeFacilityId }) => {
                 }
                 selectedDeviceId={
                   selectedDeviceSpecimenType.deviceType.internalId
+                }
+                selectedSpecimenId={
+                  selectedDeviceSpecimenType.specimenType.internalId
                 }
                 selectedDeviceTestLength={
                   // `testLength` is not nullable and is always returned by
