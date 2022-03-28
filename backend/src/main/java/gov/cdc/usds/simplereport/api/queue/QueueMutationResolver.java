@@ -34,7 +34,13 @@ public class QueueMutationResolver implements GraphQLMutationResolver {
   }
 
   public AddTestResultResponse addTestResultNew(
-      String deviceID, UUID deviceSpecimenType, String result, UUID patientID, Date dateTested)
+      // String deviceID, UUID deviceSpecimenType, String result, UUID patientID, Date dateTested)
+      String deviceID,
+      String specimenID,
+      UUID deviceSpecimenType,
+      String result,
+      UUID patientID,
+      Date dateTested)
       throws NumberParseException {
     UUID deviceSpecimenTypeId =
         deviceSpecimenType == null
@@ -47,7 +53,12 @@ public class QueueMutationResolver implements GraphQLMutationResolver {
   }
 
   public ApiTestOrder editQueueItem(
-      UUID id, String deviceId, UUID deviceSpecimenType, String result, Date dateTested) {
+      UUID id,
+      String deviceId,
+      String specimenId,
+      UUID deviceSpecimenType,
+      String result,
+      Date dateTested) {
     UUID dst =
         deviceSpecimenType == null
             ? _dts.getFirstDeviceSpecimenTypeForDeviceTypeId(UUID.fromString(deviceId))

@@ -51,6 +51,7 @@ class TestEventExportIntegrationTest extends BaseGraphqlTest {
         JsonNodeFactory.instance
             .objectNode()
             .put("deviceId", facility.getDefaultDeviceType().getInternalId().toString())
+            .put("specimenId", facility.getDefaultSpecimenType().getInternalId().toString())
             .put("patientId", patient.getInternalId().toString())
             .put("result", TestResult.NEGATIVE.toString())
             .put("dateTested", "2021-09-01T10:31:30.001Z");

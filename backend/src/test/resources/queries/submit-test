@@ -1,12 +1,14 @@
 mutation SubmitTestResult(
   $patientId: ID!
   $deviceId: String!
+  $specimenId: String!
   $result: String!
   $dateTested: DateTime
 ) {
   addTestResultNew(
     patientId: $patientId
     deviceId: $deviceId
+    specimenId: $specimenId
     result: $result
     dateTested: $dateTested
   ) {

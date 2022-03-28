@@ -1,6 +1,8 @@
 package gov.cdc.usds.simplereport.api.model;
 
 import gov.cdc.usds.simplereport.db.model.DeviceSpecimenType;
+import gov.cdc.usds.simplereport.db.model.DeviceType;
+import gov.cdc.usds.simplereport.db.model.SpecimenType;
 import gov.cdc.usds.simplereport.db.model.TestOrder;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestCorrectionStatus;
 import gov.cdc.usds.simplereport.service.model.WrappedEntity;
@@ -37,5 +39,13 @@ public class ApiTestOrder extends WrappedEntity<TestOrder> {
 
   public DeviceSpecimenType getDeviceSpecimenType() {
     return wrapped.getDeviceSpecimen();
+  }
+
+  public DeviceType getDeviceType() {
+    return wrapped.getDeviceType();
+  }
+
+  public SpecimenType getSpecimenType() {
+    return wrapped.getSpecimenType();
   }
 }

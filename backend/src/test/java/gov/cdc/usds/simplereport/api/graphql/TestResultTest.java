@@ -14,6 +14,7 @@ import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.Person;
+import gov.cdc.usds.simplereport.db.model.SpecimenType;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
 import gov.cdc.usds.simplereport.service.OrganizationService;
 import gov.cdc.usds.simplereport.service.sms.SmsService;
@@ -78,6 +79,8 @@ class TestResultTest extends BaseGraphqlTest {
   void submitTestResult() throws Exception {
     Person p = _dataFactory.createFullPerson(_org);
     DeviceType d = _site.getDefaultDeviceType();
+    SpecimenType s = _site.getDefaultSpecimenType();
+
     _dataFactory.createTestOrder(p, _site);
     String dateTested = "2020-12-31T14:30:30.001Z";
 
@@ -85,6 +88,7 @@ class TestResultTest extends BaseGraphqlTest {
         JsonNodeFactory.instance
             .objectNode()
             .put("deviceId", d.getInternalId().toString())
+            .put("specimenId", s.getInternalId().toString())
             .put("patientId", p.getInternalId().toString())
             .put("result", TestResult.NEGATIVE.toString())
             .put("dateTested", dateTested);
@@ -101,6 +105,8 @@ class TestResultTest extends BaseGraphqlTest {
     Person p1 = _dataFactory.createFullPerson(_org);
     Person p2 = _dataFactory.createMinimalPerson(_org, _site);
     DeviceType d = _site.getDefaultDeviceType();
+    SpecimenType s = _site.getDefaultSpecimenType();
+
     _dataFactory.createTestOrder(p1, _site);
     _dataFactory.createTestOrder(p2, _site);
     String dateTested = "2020-12-31T14:30:30.001Z";
@@ -112,6 +118,7 @@ class TestResultTest extends BaseGraphqlTest {
         JsonNodeFactory.instance
             .objectNode()
             .put("deviceId", d.getInternalId().toString())
+            .put("specimenId", s.getInternalId().toString())
             .put("patientId", p1.getInternalId().toString())
             .put("result", TestResult.NEGATIVE.toString())
             .put("dateTested", dateTested);
@@ -119,6 +126,7 @@ class TestResultTest extends BaseGraphqlTest {
         JsonNodeFactory.instance
             .objectNode()
             .put("deviceId", d.getInternalId().toString())
+            .put("specimenId", s.getInternalId().toString())
             .put("patientId", p2.getInternalId().toString())
             .put("result", TestResult.NEGATIVE.toString())
             .put("dateTested", dateTested);
@@ -179,7 +187,9 @@ class TestResultTest extends BaseGraphqlTest {
         _dataFactory.createMinimalPerson(_org, _secondSite, "Lindsay", "L", "Wasserman", "");
 
     DeviceType d = _site.getDefaultDeviceType();
+    SpecimenType s = _site.getDefaultSpecimenType();
     DeviceType secondSiteDevice = _secondSite.getDefaultDeviceType();
+    SpecimenType secondSiteSpecimen = _site.getDefaultSpecimenType();
 
     _dataFactory.createTestOrder(p1, _site);
     _dataFactory.createTestOrder(p2, _site);
@@ -191,6 +201,7 @@ class TestResultTest extends BaseGraphqlTest {
         JsonNodeFactory.instance
             .objectNode()
             .put("deviceId", d.getInternalId().toString())
+            .put("specimenId", s.getInternalId().toString())
             .put("patientId", p1.getInternalId().toString())
             .put("result", TestResult.POSITIVE.toString())
             .put("dateTested", dateTested);
@@ -198,6 +209,7 @@ class TestResultTest extends BaseGraphqlTest {
         JsonNodeFactory.instance
             .objectNode()
             .put("deviceId", d.getInternalId().toString())
+            .put("specimenId", s.getInternalId().toString())
             .put("patientId", p2.getInternalId().toString())
             .put("result", TestResult.NEGATIVE.toString())
             .put("dateTested", dateTested);
@@ -205,6 +217,7 @@ class TestResultTest extends BaseGraphqlTest {
         JsonNodeFactory.instance
             .objectNode()
             .put("deviceId", secondSiteDevice.getInternalId().toString())
+            .put("specimenId", secondSiteSpecimen.getInternalId().toString())
             .put("patientId", p3.getInternalId().toString())
             .put("result", TestResult.NEGATIVE.toString())
             .put("dateTested", dateTested);
@@ -212,6 +225,7 @@ class TestResultTest extends BaseGraphqlTest {
         JsonNodeFactory.instance
             .objectNode()
             .put("deviceId", secondSiteDevice.getInternalId().toString())
+            .put("specimenId", secondSiteSpecimen.getInternalId().toString())
             .put("patientId", p4.getInternalId().toString())
             .put("result", TestResult.NEGATIVE.toString())
             .put("dateTested", dateTested);
@@ -260,6 +274,7 @@ class TestResultTest extends BaseGraphqlTest {
     Person p1 = _dataFactory.createFullPerson(_org);
     Person p2 = _dataFactory.createMinimalPerson(_org, _site);
     DeviceType d = _site.getDefaultDeviceType();
+    SpecimenType s = _site.getDefaultSpecimenType();
     _dataFactory.createTestOrder(p1, _site);
     _dataFactory.createTestOrder(p2, _site);
     String dateTested = "2020-12-31T14:30:30.001Z";
@@ -268,6 +283,7 @@ class TestResultTest extends BaseGraphqlTest {
         JsonNodeFactory.instance
             .objectNode()
             .put("deviceId", d.getInternalId().toString())
+            .put("specimenId", s.getInternalId().toString())
             .put("patientId", p1.getInternalId().toString())
             .put("result", TestResult.POSITIVE.toString())
             .put("dateTested", dateTested);
@@ -275,6 +291,7 @@ class TestResultTest extends BaseGraphqlTest {
         JsonNodeFactory.instance
             .objectNode()
             .put("deviceId", d.getInternalId().toString())
+            .put("specimenId", s.getInternalId().toString())
             .put("patientId", p2.getInternalId().toString())
             .put("result", TestResult.NEGATIVE.toString())
             .put("dateTested", dateTested);
