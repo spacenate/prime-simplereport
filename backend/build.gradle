@@ -149,10 +149,11 @@ jacocoTestReport {
     dependsOn test // tests are required to run before generating the report
 }
 
-// Prefer SPRING_DATASOURCE_URL if provided
+// Prefer SPRING_DATASOURCE_URL if provided, otherwise assume localhost
 def dbConnectionString = System.getenv("SPRING_DATASOURCE_URL") ?: "jdbc:postgresql://127.0.0.1:${System.getenv("SR_DB_PORT") ?: 5432}/simple_report"
-// If SPRING_DATASOURCE_URL is provided, assume target DB is non-local and schema is "public"
-def defaultSchema = System.getenv("SPRING_DATASOURCE_URL") ? "public" : "simple_report"
+def isLocalDB = dbConnectionString.contains("postgresql://db") || dbConnectionString.contains("postgresql://127")
+// Use "simple_report" schema for local DBs, and "public" for non-local
+def defaultSchema = isLocalDB ? "simple_report" : "public"
 def noPhiPassword = System.getenv("DB_PASSWORD_NO_PHI") ?: "nophi789"
 
 liquibase {
@@ -196,11 +197,11 @@ spotless {
 
 task testDbStart(type: Exec) {
     environment "SR_DB_PORT", testDbPort
-    commandLine "docker", "compose", "-p", "simple-report-tests", "-f", "../docker-compose.yml", "up", "-d", "db"
+    commandLine "docker", "compose", "--env-file", "../.env.test", "-p", "simple-report-tests", "-f", "../docker-compose.yml", "up", "-d", "db"
 }
 
 task testDbStop(type: Exec) {
-    commandLine "docker", "compose", "-p", "simple-report-tests", "-f", "../docker-compose.yml", "down"
+    commandLine "docker", "compose", "--env-file", "../.env.test", "-p", "simple-report-tests", "-f", "../docker-compose.yml", "down"
 }
 
 task testDbReset(type: Exec) {
@@ -223,7 +224,7 @@ test {
     systemProperty "test-db-host", testDbHost
     systemProperty "test-db-port", testDbPort
     systemProperty "skip-db-setup", skipDbSetup
-    if (skipDbSetup == false) {
+    if (skipDbSetup == "false" && System.getenv("CI") == null) {
         dependsOn testDbStart
         finalizedBy testDbStop
     }
