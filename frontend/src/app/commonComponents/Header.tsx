@@ -126,6 +126,7 @@ const Header: React.FC<{}> = () => {
               />
             </LinkWithQuery>
             <div className="prime-organization-name">{organization.name}</div>
+            <div className="prime-organization-name">Nathan wuz here</div>
           </div>
           <button
             onClick={() => setMenuVisible(!menuVisible)}
