@@ -64,11 +64,16 @@ runs:
         DEPLOY_ENV: ${{ inputs.deploy-env }}
       run: |
         echo "::group::Build application"
+        echo $REACT_APP_CURRENT_COMMIT
+        git rev-parse HEAD
+        git log -n 1
         yarn run build
         echo "::endgroup::"
     - name: Create client build archive
       shell: bash
       run: |
         echo "::group::Create application archive"
+        ls -la
+        cat app/static/commit.txt || echo
         tar -C ./frontend/build -czf ${{inputs.client-tarball}} .
         echo "::endgroup::"
